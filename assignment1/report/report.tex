@@ -27,11 +27,13 @@
 
 \usepackage{multirow}
 
+\usepackage{todonotes}
+
 % Remove chapters from figure counters
 %\counterwithout{figure}{chapter}
 % Add sections instead
 %\counterwithin{figure}{section}
-\counterwithout{section}{chapter}
+%\counterwithout{section}{chapter}
 
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows}
@@ -42,6 +44,65 @@
 \begin{document}
 
 \maketitle
+
+\section*{Question 1}
+
+The problem can easily be cast to an instance of max-flow.
+
+Given is an undirected graph $G = (V, E)$, where each edge $(u,v) \in
+E$ has a weight $w(u,v)$. We have a set $\{0, ..., 5\} \subset V$ of
+sources, and a single sink, $t=19$. To solve the problem as a max-flow
+problem, we first have to convert it to the form of a \emph{flow
+  network}, i.e. we must ensure that the graph is directed, has no
+antiparallel edges, and that there is a single source and sink.
+
+We construct a new graph $G' = (V', E')$ as follows:
+
+\begin{itemize}
+\item Add all vertices $v \in V$ to $V'$.
+\item For each edge $(u,v) \in E$, we introduce an extra vertex $v'$
+  to $V'$, and edges $(v,u), (u,v'), (v', u)$ to $E'$ with $c(v,u) =
+  c(u,v') = c(v', u) = w(u,v)$.
+\item Add a single \emph{supersource} $s$ to $V'$ and edges $(s,0),
+  (s,1), ..., (s,5)$ to $E'$ with $c(s,0) = c(s, 1) = ... = c(s,5) =
+  \infty$.
+\end{itemize}
+
+This will yield a valid flow network $G'$. When finding a max-flow
+$f^\star$ in this network, we can choose between the
+\textsc{Ford-Fulkerson}, running in $O(V |f^\star|)$ time, and
+\textsc{Edmonds-Karp}, running in $O(VE^2)$ time. It is evident that
+\textsc{Ford-Fulkerson} is only asymptotically more efficient when $VE
+< |f^\star|$. In our case, the maximum incoming flow to the sink is
+$110$, and hence is an upper bound for $|f^\star|$. For this
+particular network, \textsc{Ford-Fulkerson} would therefore be the
+most efficient method.
+
+
+\section*{Question 2}
+
+We simply use the method from Cormen section 29.2 for expressing a
+maximum flow problem as a linear program:
+
+\begin{align*}
+  \text{maximize} && \sum_{v\in V'} f_{sv} -{}& \sum_{v\in V'} f_{vs} \\
+  \text{subject to} && f_{uv} \leq{}& c(u,v) & \text{for each $u,v\in V$}, \\
+                    && \sum_{v \in V'} f_{vu} ={}& \sum_{v \in V'} f_{uv} & \text{for each $u \in V - \{s, t \}$}, \\
+                    && f_{uv} \geq{}& 0 & \text{for each $u,v \in V$}.
+\end{align*}
+
+
+\section*{Question 3}
+
+The example graph expressed both as an undirected graph and converted
+to a flow network can be seen in Figure \ref{fig:example-graph}.
+
+The solution to the linear program is
+\begin{align*}
+  f_{ab} = 20, ~~ f_{bd} = 25, ~~ f_{ac} = 15, ~~ f_{cb} = 5, ~~ f_{cd}=10,
+\end{align*}
+the rest of the variables are set to zero.
+
 
 \bibliographystyle{abbrv}
 \bibliography{bibliography}
