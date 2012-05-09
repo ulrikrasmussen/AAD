@@ -132,6 +132,71 @@ $$(f_{sz}, f_{zt}, f_{ts}, f_{sx}, f_{xa}, f_{as}, f_{ay}, f_{yt}, f_{ta}) = (60
   \label{fig:example-graph}
 \end{figure}
 
+\section*{Question 4}
+
+Given a formulation of the computer network problem as a flow graph
+$G=(V,E)$, we need to find an edge $(u,v) \in E$ for which increasing
+the capacity $c(u,v)$ by one will lead to an increase in
+$|f^\star|$. Moreover, the edge that is increased must be the edge
+with the smallest capacity among all edges which can increase the
+maximum flow.
+
+An efficient method for finding such an edge is to first find the
+maximum flow $f^\star$, and then compute the residual graph
+$G_{f^\star}$, and hence finding the minimum cut $(S,T)$. We then
+identify the following set of candidate edges
+$$
+ C = \left\{ (u,v) \in E : u \in S, v \in T,
+\substack{\text{increasing $c(u,v)$ by one yields graph $G'$} \\ \text{with an augmenting path in $G'_{f^\star}$}} \right\}.
+$$
+
+We then pick the edge $(u,v) \in C$ with the smallest capacity, and
+increase its capacity $c(u,v)$ by one. Finding the max flow and
+checking for augmenting paths can both be done in polynomial time, so
+we regard this method as efficient. Note that the set $C$ may be
+empty, which means that there is no such single flow-increasing edge.
+
+We claim that if the set $C$ is not empty, the above method will yield
+a new graph $G'$ with a max flow ${f^\star}'$ such that
+\begin{enumerate}
+\item $|{f^\star}'| > |f^\star|$, and that
+\item there is no edge $(u',v') \in E$ where $(u',v') \not= (u,v)$ for
+  which increasing $c(u',v')$ by one will yield another graph $G''$
+  where $|{f^\star}''| > |f^\star|$ and $c(u',v') < c(u,v)$.
+\end{enumerate}
+
+\begin{proof}
+  Showing (1) is a direct consequence of Corollary 26.3. Since we
+  chose $(u,v)$ such that increasing $c(u,v)$ would yield an
+  augmenting path $p$ in $G'_{f^\star}$, ${f^\star}' = f^\star
+  \uparrow f_p$ is a flow in $G'$, with $|{f^\star}'| > |f^\star|$.
+
+  Showing (2) is a proof by contradiction. Assume that there is an
+  edge $(u', v') \in E$ with $c(u',v') < c(u,v)$ where defining
+  $c''(u', v') = c(u',v')+1$ yields a graph $G''$ with $|{f^\star}''|
+  > |f^\star|$. This implies that $G_{f^\star}''$ contains an
+  augmenting path $p$ going through $u'$ and $v'$, and specifically
+  that there must be paths from $s$ to $u'$ and from $v'$ to $t$ in
+  the original residual graph $G_{f^\star}$. Therefore, there cannot
+  be a path from $s$ to $v'$ in $G_{f^\star}$, because then we would
+  have an augmenting path in $G_{f^\star}$, a contradiction. This
+  places $u' \in S$ and $v' \in T$, and hence also $(u', v') \in
+  C$. Since we chose $(u,v) \in C$ with the minimum $c(u,v)$, we must
+  have $c(u,v) \leq c(u', v')$. This contradicts our assumption that
+  $c(u', v') < c(u,v)$, and hence we are done.
+\end{proof}
+
+\section*{Question 5}
+
+\begin{align*}
+  \text{minimize}   &&& 60y_{sz} + 60y_{zt} + 60y_{ts} + 30y_{sx} + 30y_{xa} + 30y_{as} + 50y_{ay} + 50y_{yt} + 50y_{ta} \\
+  \text{subject to} &&& 
+\end{align*}
+
+\section*{Question 6}
+
+
+\section*{Question 7}
 
 \bibliographystyle{abbrv}
 \bibliography{bibliography}
