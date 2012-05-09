@@ -67,7 +67,7 @@ for src in workstations:
 	# note no upper bound is specified!
 	network.connect("source",src,LpVariable("source->"+str(src),0))
 
-# Check its all in the data structure
+# Check it's all in the data structure
 if (print_debug):
 	print network.get_dict()
 	print vertices
@@ -77,12 +77,24 @@ prob = LpProblem("Max flow network transfer problem",LpMaximize)
 
 variables = network.get_dict()
 
+# Collect all the flow out of the source - note nothing flows in
 source_connected = []
 for var in variables:
 	if var[0] == "source":
 		source_connected.append(variables[var])
 		
-#TODO Add objective function to problem
-prob += LpSum(source_connected, "Flow out of source")
+# Add the objective function
+prob += lpSum(source_connected), "Flow out of super source"
 
-#TODO Add constraints to the problem
+# Add constraints on flow conservation
+for vertex in vertices:
+	# find all edges in:
+	flow_in  = []
+	flow_out = []
+	for var in variables:
+		if var[1] == vertex:
+			flow_in.append(variables[var])
+		elif var[0] == vertex:
+			flow_out.append(variables[var])
+
+	prob += lpSum(flow_in) - lpSum(flow_out) == 0, "Flow conservation for " + str(vertex)
