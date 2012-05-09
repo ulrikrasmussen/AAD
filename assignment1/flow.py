@@ -15,6 +15,7 @@ class flow():
 	# Doesn't have to be a capacity you add here - could be any type of object
 	def connect(self,source,dest,capacity):
 		self.flow[(source,dest)] = capacity
+		self.flow[(dest,source)] = capacity
 	
 	# Get the object stored between the source and dest vertices
 	def get(self,source,dest):
@@ -27,6 +28,12 @@ class flow():
 	def get_dict(self):
 		return self.flow
 		
-	# Return the list of edges
+	# Return an iterator over edges
 	def get_list(self):
 		return self.flow.iteritems()
+
+myflow = flow()
+for edge in edges:
+	myflow.connect(edge['u'],edge['v'],edge['c'])
+
+print myflow.get_dict()
