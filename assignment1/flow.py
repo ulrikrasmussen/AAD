@@ -1,6 +1,8 @@
 import json,sys
 from pulp import *
 
+print_debug = True
+
 # Import the graph json file
 f = open("network.json", "r")
 edges = json.load(f)["edges"]
@@ -65,11 +67,22 @@ for src in workstations:
 	# note no upper bound is specified!
 	network.connect("source",src,LpVariable("source->"+str(src),0))
 
-print network.get_dict()
-print vertices
+# Check its all in the data structure
+if (print_debug):
+	print network.get_dict()
+	print vertices
+
+# Begin solving using Pulp
 prob = LpProblem("Max flow network transfer problem",LpMaximize)
 
+variables = network.get_dict()
+
+source_connected = []
+for var in variables:
+	if var[0] == "source":
+		source_connected.append(variables[var])
+		
 #TODO Add objective function to problem
-#prob += LpSum()
+prob += LpSum(source_connected, "Flow out of source")
 
 #TODO Add constraints to the problem
