@@ -86,22 +86,51 @@ maximum flow problem as a linear program:
 
 \begin{align*}
   \text{maximize} && \sum_{v\in V'} f_{sv} -{}& \sum_{v\in V'} f_{vs} \\
-  \text{subject to} && f_{uv} \leq{}& c(u,v) & \text{for each $u,v\in V$}, \\
+  \text{subject to} && f_{uv} \leq{}& c(u,v) & \text{for each $(u,v) \in E$}, \\
                     && \sum_{v \in V'} f_{vu} ={}& \sum_{v \in V'} f_{uv} & \text{for each $u \in V - \{s, t \}$}, \\
-                    && f_{uv} \geq{}& 0 & \text{for each $u,v \in V$}.
+                    && f_{uv} \geq{}& 0 & \text{for each $(u, v) \in E$}.
 \end{align*}
+
+where each variable $f_{uv}$ represents the value of $f(u,v)$ in the
+resulting flow. For each $(u,v) \not\in E$, we fix the corresponding
+variable $f_{uv}$ to 0.
 
 
 \section*{Question 3}
 
 The example graph expressed both as an undirected graph and converted
-to a flow network can be seen in Figure \ref{fig:example-graph}.
+to a flow network can be seen in Figure \ref{fig:example-graph}. The
+linear program for the flow network takes on the following form:
 
-The solution to the linear program is
 \begin{align*}
-  f_{ab} = 20, ~~ f_{bd} = 25, ~~ f_{ac} = 15, ~~ f_{cb} = 5, ~~ f_{cd}=10,
+  \text{maximize}   &&& f_{sz} + f_{sx} - f_{as} - f_{ts} \\
+  \text{subject to} &&& f_{sz} &\leq 60 \\
+                    &&& f_{zt} &\leq 60 \\
+                    &&& f_{ts} &\leq 60 \\
+                    &&& f_{sx} &\leq 30 \\
+                    &&& f_{xa} &\leq 30 \\
+                    &&& f_{as} &\leq 30 \\
+                    &&& f_{ay} &\leq 50 \\
+                    &&& f_{yt} &\leq 50 \\
+                    &&& f_{ta} &\leq 50 \\
+                    &&& f_{ta} + f_{xa}  - f_{as} - f_{ay} &= 0 \\
+                    &&& f_{sx} - f_{xa} &= 0 \\
+                    &&& f_{ay} - f_{yt} &= 0 \\
+                    &&& f_{sz} - f_{zt} &= 0 \\
+                    &&& f_{sz}, f_{zt}, f_{ts}, f_{sx}, f_{xa}, f_{as}, f_{ay}, f_{yt}, f_{ta} &\geq 0
 \end{align*}
-the rest of the variables are set to zero.
+
+The solution to the above linear program is
+$$(f_{sz}, f_{zt}, f_{ts}, f_{sx}, f_{xa}, f_{as}, f_{ay}, f_{yt}, f_{ta}) = (60, 60, 0, 30, 30, 0, 30, 30, 0).$$
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[scale=0.75]{graph1.pdf}
+  \includegraphics[scale=0.75]{graph1-flow.pdf}
+  \caption{Example graph, before and after conversion to a valid flow
+    network.}
+  \label{fig:example-graph}
+\end{figure}
 
 
 \bibliographystyle{abbrv}

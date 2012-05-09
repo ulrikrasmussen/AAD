@@ -1,0 +1,5 @@
+graph g {
+    s -- a [label="30"];
+    a -- t [label="50"];
+    t -- s [label="60"];
+}

@@ -1,21 +1,6 @@
 digraph g {
-    a;
-    b;
-    c;
-    d;
-    "a'";
-    "b'";
-    "c'";
-    "c''";
-    "d'";
-
-    a -> b[label="20"];
-    a -> c[label="10"];
-    b -> "b'" -> a[label="20"];
-    c -> "a'" -> a[label="10"];
-    c -> d[label="5"];
-    b -> d -> "d'" -> b[label="5"];
-    b -> c -> "c''" -> b[label="5"];
-    d -> "c'" -> c -> d[label="5"];
+    s -> x -> a -> s [label="30"];
+    a -> y -> t -> a [label="50"];
+    s -> z -> t -> s [label="60"];
     
 }
