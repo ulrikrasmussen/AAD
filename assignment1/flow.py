@@ -16,8 +16,7 @@ class flow():
 	# Doesn't have to be a capacity you add here - could be any type of object
 	def connect(self,source,dest,capacity):
 		self.flow[(source,dest)] = capacity
-		self.flow[(dest,source)] = capacity
-	
+		
 	# Get the object stored between the source and dest vertices
 	def get(self,source,dest):
 		try:
@@ -41,18 +40,26 @@ for edge in edges:
 
 #print myflow.get_dict()
 network = flow()
+vertices = set()
+
 # create capacity constraints
 for edge in edges:
-	# need variable bound
+	# Get the vertices
 	u, v = edge['u'], edge['v']
+	vertices.add(u)
+	vertices.add(v)
+	# Set the bounds on the edge
 	lower = 0
 	upper = edge['c']
-	varname = str(u) + "to" + str(v)
-	network.connect(u,v,LpVariable(varname,lower,upper))
-	#print "%s  -> %s, cap=%s" % (u,v, edge['c'])        
+	# Store a LP variable for this edge
+	network.connect(u,v,LpVariable(str(u) + "to" + str(v),lower,upper))
+    # Store the antiparallel edge too:
+	network.connect(v,u,LpVariable(str(v) + "to" + str(u),lower,upper))
+
+
 
 print network.get_dict()
-
+print vertices
 prob = LpProblem("Max flow network transfer problem",LpMaximize)
 
 #TODO Add objective function to problem
