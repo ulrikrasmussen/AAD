@@ -42,6 +42,9 @@ for edge in edges:
 network = flow()
 vertices = set()
 
+workstations = set(range(0,6))
+server = 19
+
 # create capacity constraints
 for edge in edges:
 	# Get the vertices
@@ -52,11 +55,15 @@ for edge in edges:
 	lower = 0
 	upper = edge['c']
 	# Store a LP variable for this edge
-	network.connect(u,v,LpVariable(str(u) + "to" + str(v),lower,upper))
+	network.connect(u,v,LpVariable(str(u) + "->" + str(v),lower,upper))
     # Store the antiparallel edge too:
-	network.connect(v,u,LpVariable(str(v) + "to" + str(u),lower,upper))
+	network.connect(v,u,LpVariable(str(v) + "->" + str(u),lower,upper))
 
-
+# add a super source to nodes 0 to 5
+vertices.add("source")
+for src in workstations:
+	# note no upper bound is specified!
+	network.connect("source",src,LpVariable("source->"+str(src),0))
 
 print network.get_dict()
 print vertices
