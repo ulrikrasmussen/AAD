@@ -4,9 +4,10 @@ from pulp import *
 print_debug = True
 
 # Import the graph json file
-f = open("network.json", "r")
+f = open("simple.json", "r")
 edges = json.load(f)["edges"]
 f.close()
+simple_net = True
 
 # Flow objects contain the connections for a flow network
 class flow():
@@ -62,10 +63,11 @@ for edge in edges:
 	network.connect(v,u,LpVariable(str(v) + "->" + str(u),lower,upper))
 
 # add a super source to nodes 0 to 5
-vertices.add("source")
-for src in workstations:
-	# note no upper bound is specified!
-	network.connect("source",src,LpVariable("source->"+str(src),0))
+if not simple_net:
+	vertices.add("source")
+	for src in workstations:
+		# note no upper bound is specified!
+		network.connect("source",src,LpVariable("source->"+str(src),0))
 
 # Check it's all in the data structure
 if (print_debug):
@@ -96,5 +98,9 @@ for vertex in vertices:
 			flow_in.append(variables[var])
 		elif var[0] == vertex:
 			flow_out.append(variables[var])
-
 	prob += lpSum(flow_in) - lpSum(flow_out) == 0, "Flow conservation for " + str(vertex)
+
+prob.writeLP("maxflow.lp")
+prob.solve()
+print "Status: ", LpStatus[prob.status]
+print "Value: ", value(prob.objective)
