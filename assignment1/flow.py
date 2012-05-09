@@ -1,3 +1,10 @@
+import json,sys
+
+# Import the graph json file
+f = open("network.json", "r")
+edges = json.load(f)["edges"]
+f.close()
+
 # Flow objects contain the connections for a flow network
 class flow():
 	# Creates an empty dictionary
