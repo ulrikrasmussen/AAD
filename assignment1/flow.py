@@ -1,4 +1,5 @@
 import json,sys
+from pulp import *
 
 # Import the graph json file
 f = open("network.json", "r")
@@ -36,4 +37,25 @@ myflow = flow()
 for edge in edges:
 	myflow.connect(edge['u'],edge['v'],edge['c'])
 
-print myflow.get_dict()
+
+
+#print myflow.get_dict()
+network = flow()
+# create capacity constraints
+for edge in edges:
+	# need variable bound
+	u, v = edge['u'], edge['v']
+	lower = 0
+	upper = edge['c']
+	varname = str(u) + "to" + str(v)
+	network.connect(u,v,LpVariable(varname,lower,upper))
+	#print "%s  -> %s, cap=%s" % (u,v, edge['c'])        
+
+print network.get_dict()
+
+prob = LpProblem("Max flow network transfer problem",LpMaximize)
+
+#TODO Add objective function to problem
+#prob += LpSum()
+
+#TODO Add constraints to the problem
