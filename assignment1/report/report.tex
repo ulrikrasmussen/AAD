@@ -85,43 +85,52 @@ We simply use the method from Cormen section 29.2 for expressing a
 maximum flow problem as a linear program:
 
 \begin{align*}
-  \text{maximize} && \sum_{v\in V'} f_{sv} -{}& \sum_{v\in V'} f_{vs} \\
+  \text{maximize} && \sum_{v\in V'} f_{sv} \\
   \text{subject to} && f_{uv} \leq{}& c(u,v) & \text{for each $(u,v) \in E$}, \\
                     && \sum_{v \in V'} f_{vu} ={}& \sum_{v \in V'} f_{uv} & \text{for each $u \in V - \{s, t \}$}, \\
                     && f_{uv} \geq{}& 0 & \text{for each $(u, v) \in E$}.
 \end{align*}
 
 where each variable $f_{uv}$ represents the value of $f(u,v)$ in the
-resulting flow. For each $(u,v) \not\in E$, we fix the corresponding
-variable $f_{uv}$ to 0.
+resulting flow. Note that we omit incoming edges to the source in the
+objective function, as the procedure described in Question 1 ensures
+that there are never any incoming edges to the supersource. For each
+$(u,v) \not\in E$, we fix the corresponding variable $f_{uv}$ to 0.
 
 
 \section*{Question 3}
 
 The example graph expressed both as an undirected graph and converted
 to a flow network can be seen in Figure \ref{fig:example-graph}. The
-linear program for the flow network takes on the following form:
+linear program for the flow network takes on the following (normal)
+form:
 
 \begin{align*}
-  \text{maximize}   &&& f_{sz} + f_{sx} - f_{as} - f_{ts} \\
-  \text{subject to} &&& f_{sz} &\leq 60 \\
+  \text{maximize}   &&& f_{sw} \\
+  \text{subject to} &&& f_{wz} &\leq 60 \\
                     &&& f_{zt} &\leq 60 \\
-                    &&& f_{ts} &\leq 60 \\
-                    &&& f_{sx} &\leq 30 \\
+                    &&& f_{tw} &\leq 60 \\
+                    &&& f_{wx} &\leq 30 \\
                     &&& f_{xa} &\leq 30 \\
-                    &&& f_{as} &\leq 30 \\
+                    &&& f_{aw} &\leq 30 \\
                     &&& f_{ay} &\leq 50 \\
                     &&& f_{yt} &\leq 50 \\
                     &&& f_{ta} &\leq 50 \\
-                    &&& f_{ta} + f_{xa}  - f_{as} - f_{ay} &= 0 \\
-                    &&& f_{sx} - f_{xa} &= 0 \\
-                    &&& f_{ay} - f_{yt} &= 0 \\
-                    &&& f_{sz} - f_{zt} &= 0 \\
-                    &&& f_{sz}, f_{zt}, f_{ts}, f_{sx}, f_{xa}, f_{as}, f_{ay}, f_{yt}, f_{ta} &\geq 0
+                    &&& f_{ta} + f_{xa}  - f_{aw} - f_{ay} & \leq 0 \\
+                    &&& -f_{ta} - f_{xa}  + f_{aw} + f_{ay} & \leq 0 \\
+                    &&& f_{wx} - f_{xa} &\leq 0 \\
+                    &&& -f_{wx} + f_{xa} &\leq 0 \\
+                    &&& f_{ay} - f_{yt} &\leq 0 \\
+                    &&& -f_{ay} + f_{yt} &\leq 0 \\
+                    &&& f_{wz} - f_{zt} &\leq 0 \\
+                    &&& -f_{wz} + f_{zt} &\leq 0 \\
+                    &&& f_{wz} + f_{wx} - f_{tw} - f_{sw} & \leq 0 \\
+                    &&& -f_{wz} - f_{wx} + f_{tw} + f_{sw} & \leq 0 \\
+                    &&& f_{sw}, f_{wz}, f_{zt}, f_{tw}, f_{wx}, f_{xa}, f_{aw}, f_{ay}, f_{yt}, f_{ta} &\geq 0
 \end{align*}
 
 The solution to the above linear program is
-$$(f_{sz}, f_{zt}, f_{ts}, f_{sx}, f_{xa}, f_{as}, f_{ay}, f_{yt}, f_{ta}) = (60, 60, 0, 30, 30, 0, 30, 30, 0).$$
+$$(f_{sw}, f_{wz}, f_{zt}, f_{tw}, f_{wx}, f_{xa}, f_{aw}, f_{ay}, f_{yt}, f_{ta}) = (90, 60, 60, 0, 30, 30, 0, 30, 30, 0).$$
 
 \begin{figure}[h]
   \centering
@@ -147,7 +156,8 @@ $G_{f^\star}$, and hence finding the minimum cut $(S,T)$. We then
 identify the following set of candidate edges
 $$
  C = \left\{ (u,v) \in E : u \in S, v \in T,
-\substack{\text{increasing $c(u,v)$ by one yields graph $G'$} \\ \text{with an augmenting path in $G'_{f^\star}$}} \right\}.
+\substack{\text{increasing $c(u,v)$ by one yields graph $G'$}
+       \\ \text{with an augmenting path in $G'_{f^\star}$}} \right\}.
 $$
 
 We then pick the edge $(u,v) \in C$ with the smallest capacity, and
@@ -191,9 +201,19 @@ a new graph $G'$ with a max flow ${f^\star}'$ such that
 \section*{Question 5}
 
 \begin{align*}
-  \text{minimize}   &&& 60y_{sz} + 60y_{zt} + 60y_{ts} + 30y_{sx} + 30y_{xa} + 30y_{as} + 50y_{ay} + 50y_{yt} + 50y_{ta} \\
-  \text{subject to} &&& 
+\text{minimize}   &&& 60y_{wz} + 60y_{zt} + 60y_{tw} + 30y_{wx} + 30y_{xa} + 30y_{aw} + 50y_{ay} + 50y_{yt} + 50y_{ta}  \\
+\text{subject to} &&& -z_{w}+  z'_{w} &\geq 1 \\
+                  &&& y_{wz}+  z_{z}  -z'_{z}+  z_{w}  -z'_{w} &\geq 0 \\
+                  &&& y_{zt}  -z_{z}+  z'_{z}&\geq 0 \\
+                  &&& y_{tw}  -z_{w}+  z'_{w}&\geq 0 \\
+                  &&& y_{wx}+  z_{x}  -z'_{x}+  z_{w}  -z'_{w}&\geq 0 \\
+                  &&& y_{xa}+  z_{a}  -z'_{a}  -z_{x}+  z'_{x}&\geq 0 \\
+                  &&& y_{aw}  -z_{a}+  z'_{a}&\geq 0 \\
+                  &&& y_{ay}  -z_{a}+  z'_{a}+  z_{y}  -z'_{y}&\geq 0 \\
+                  &&& y_{yt}  -z_{y}+  z'_{y}&\geq 0 \\
+                  &&& y_{ta}+  z_{a}  -z'_{a}&\geq 0
 \end{align*}
+
 
 \section*{Question 6}
 
