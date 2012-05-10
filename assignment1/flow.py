@@ -2,12 +2,17 @@ import json,sys
 from pulp import *
 
 print_debug = True
+simple = False
+
 
 # Import the graph json file
-f = open("simple.json", "r")
+if simple:
+	filename = "simple.json"
+else:
+	filename = "network.json"
+f = open(filename, "r")
 edges = json.load(f)["edges"]
 f.close()
-simple_net = True
 
 # Flow objects contain the connections for a flow network
 class flow():
@@ -46,6 +51,7 @@ network = flow()
 vertices = set()
 
 workstations = set(range(0,6))
+external_relays = set(range(20,27))
 server = 19
 
 # create capacity constraints
@@ -58,16 +64,16 @@ for edge in edges:
 	lower = 0
 	upper = edge['c']
 	# Store a LP variable for this edge
-	network.connect(u,v,LpVariable(str(u) + "->" + str(v),lower,upper))
+	network.connect(u,v,LpVariable(str(u) + "_to_" + str(v),lower,upper))
     # Store the antiparallel edge too:
-	network.connect(v,u,LpVariable(str(v) + "->" + str(u),lower,upper))
+	network.connect(v,u,LpVariable(str(v) + "_to_" + str(u),lower,upper))
 
 # add a super source to nodes 0 to 5
-if not simple_net:
+if not simple:
 	vertices.add("source")
 	for src in workstations:
 		# note no upper bound is specified!
-		network.connect("source",src,LpVariable("source->"+str(src),0))
+		network.connect("source",src,LpVariable("source_to_"+str(src),0,None))
 
 # Check it's all in the data structure
 if (print_debug):
@@ -90,6 +96,8 @@ prob += lpSum(source_connected), "Flow out of super source"
 
 # Add constraints on flow conservation
 for vertex in vertices:
+	if vertex == server or vertex == "source":
+		continue
 	# find all edges in:
 	flow_in  = []
 	flow_out = []
@@ -100,7 +108,7 @@ for vertex in vertices:
 			flow_out.append(variables[var])
 	prob += lpSum(flow_in) - lpSum(flow_out) == 0, "Flow conservation for " + str(vertex)
 
-prob.writeLP("maxflow.lp")
+prob.writeLP("maxflow.lp")	
 prob.solve()
 print "Status: ", LpStatus[prob.status]
 print "Value: ", value(prob.objective)
