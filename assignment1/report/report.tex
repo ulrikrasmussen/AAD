@@ -151,18 +151,20 @@ $$
 $$
 
 We then pick the edge $(u,v) \in C$ with the smallest capacity, and
-increase its capacity $c(u,v)$ by one. Finding the max flow and
-checking for augmenting paths can both be done in polynomial time, so
-we regard this method as efficient. Note that the set $C$ may be
-empty, which means that there is no such single flow-increasing edge.
+increase its capacity $c(u,v)$ by one. I.e. we define a new graph $G'$
+with capacity $c'(a,b) = c(a,b)+1$ when $(a,b) = (u,v)$ and $c'(a,b) =
+c(a,b)$ otherwise. Note that the set $C$ may be empty, which means
+that there is no such single flow-increasing edge. Finding the max
+flow and checking for augmenting paths can both be done in polynomial
+time, so we regard this method as efficient.
 
 We claim that if the set $C$ is not empty, the above method will yield
 a new graph $G'$ with a max flow ${f^\star}'$ such that
 \begin{enumerate}
 \item $|{f^\star}'| > |f^\star|$, and that
-\item there is no edge $(u',v') \in E$ where $(u',v') \not= (u,v)$ for
+\item there is no edge $(u',v') \in E$ where $c(u',v') < c(u,v)$ for
   which increasing $c(u',v')$ by one will yield another graph $G''$
-  where $|{f^\star}''| > |f^\star|$ and $c(u',v') < c(u,v)$.
+  where $|{f^\star}''| > |f^\star|$.
 \end{enumerate}
 
 \begin{proof}
