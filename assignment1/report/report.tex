@@ -200,22 +200,43 @@ a new graph $G'$ with a max flow ${f^\star}'$ such that
 
 \section*{Question 5}
 
+We now write the dual of the linear program written in Question 3. We
+will get one dual variable for each constraint in the original
+program. The first $9$ contraints are concerned with the capacity on
+edges, so we denote the corresponding dual variables by $y_{uv}$ for
+edge $(u,v)\in E$. The next 5 pairs of constraints are concerned with
+flow conservation for individual vertices, with two constraints per
+vertex. We denote the corresponding pairs of dual variables by $z_v,
+z'_v$ for vertices $v \in V$.
+
+The resulting dual program can be seen below:
+
 \begin{align*}
 \text{minimize}   &&& 60y_{wz} + 60y_{zt} + 60y_{tw} + 30y_{wx} + 30y_{xa} + 30y_{aw} + 50y_{ay} + 50y_{yt} + 50y_{ta}  \\
-\text{subject to} &&& -z_{w}+  z'_{w} &\geq 1 \\
-                  &&& y_{wz}+  z_{z}  -z'_{z}+  z_{w}  -z'_{w} &\geq 0 \\
-                  &&& y_{zt}  -z_{z}+  z'_{z}&\geq 0 \\
-                  &&& y_{tw}  -z_{w}+  z'_{w}&\geq 0 \\
-                  &&& y_{wx}+  z_{x}  -z'_{x}+  z_{w}  -z'_{w}&\geq 0 \\
-                  &&& y_{xa}+  z_{a}  -z'_{a}  -z_{x}+  z'_{x}&\geq 0 \\
-                  &&& y_{aw}  -z_{a}+  z'_{a}&\geq 0 \\
-                  &&& y_{ay}  -z_{a}+  z'_{a}+  z_{y}  -z'_{y}&\geq 0 \\
-                  &&& y_{yt}  -z_{y}+  z'_{y}&\geq 0 \\
-                  &&& y_{ta}+  z_{a}  -z'_{a}&\geq 0
+\text{subject to} &&& z_{w}  -z'_{w} &\geq 1 \\
+                  &&&y_{wz} + (z_{z}  -z'_{z})  - (z_{w} - z'_{w}) &\geq 0 \\
+                  &&&y_{zt}  - (z_{z} - z'_{z}) &\geq 0 \\
+                  &&&y_{tw} + (z_{w}  -z'_{w}) &\geq 0 \\
+                  &&&y_{wx} + (z_{x}  -z'_{x})  -(z_{w} -  z'_{w}) &\geq 0 \\
+                  &&&y_{xa} + (z_{a}  -z'_{a})  -(z_{x} - z'_{x}) &\geq 0 \\
+                  &&&y_{aw}  -(z_{a} - z'_{a}) &\geq 0 \\
+                  &&&y_{ay}  -(z_{a} - z'_{a}) + (z_{y}  -z'_{y}) &\geq 0 \\
+                  &&&y_{yt}  -(z_{y} - z'_{y}) &\geq 0 \\
+                  &&&y_{ta} + (z_{a}  -z'_{a}) &\geq 0 \\
+                  &&& y_{wz}, y_{zt}, y_{tw}, y_{wx}, y_{xa}, y_{aw}, y_{ay}, y_{yt}, y_{ta}, z_{a}, z'_{a}, z_{x}, z'_{x}, z_{y}, z'_{y}, z_{z}, z'_{z}, z_{w}, z'_{w} &\geq 0
 \end{align*}
 
+We have solved the above program using the linear programming package
+puLP. This yields an optimal solution where
+\begin{equation*}
+(v, y_{wz}, y_{wx}, z_{w}) =(90, 1, 1, 1),
+\end{equation*}
+where $v$ is the value of the objective function, and the rest of the
+variables are zero.
 
 \section*{Question 6}
+
+
 
 
 \section*{Question 7}

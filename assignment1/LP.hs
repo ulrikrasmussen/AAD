@@ -11,6 +11,8 @@ zs = concat $ [["z_{" ++ v ++ "}", "z'_{" ++ v ++ "}"] | v <- vs \\ ["s","t"]]
 
 dualVars = ys ++ zs
 
+pythonvars = [[c] | c <- ['a'..]]
+
 n = -1
 
 --    sw wz zt tw wx xa aw ay yt ta
@@ -31,8 +33,8 @@ a = [[0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
     ,[0, 0, 0, 0, 0, 0, 0, n, 1, 0]
     ,[0, 1, n, 0, 0, 0, 0, 0, 0, 0]
     ,[0, n, 1, 0, 0, 0, 0, 0, 0, 0]
-    ,[n, 1, 0, n, 1, 0, 0, 0, 0, 0]
-    ,[1, n, 0, 1, n, 0, 0, 0, 0, 0]]
+    ,[1, n, 0, 1, n, 0, 0, 0, 0, 0]
+    ,[n, 1, 0, n, 1, 0, 0, 0, 0, 0]]
 
 a' = transpose a
 
@@ -42,5 +44,19 @@ makeLine l = concat $ intersperse "  " $ catMaybes $ zipWith filterVar dualVars 
       filterVar v 1 = Just v
       filterVar v (-1) = Just $ "-" ++ v
 
+init' v p = p ++ " = LpVariable(\"" ++ v ++ "\", 0, None)"
+
+makeConstraint l = let
+      initlists = [Just "nlist = []", Just "plist = []"]
+      listadds = zipWith3 addToList l dualVars pythonvars
+      addtoprob = [Just "prob += lpSum(plist) - lpSum(nlist) >= 0"]
+    in concat $ intersperse "\n" $ catMaybes $ initlists ++ listadds ++ addtoprob
+    where addToList 0 _ _ = Nothing
+          addToList (-1) v p = Just $ "nlist += " ++ p
+          addToList 1 v p = Just $ "plist += " ++ p
+
+
 main = do
-  mapM_ (putStrLn . makeLine) a'
+  mapM_ putStrLn $ zipWith init' dualVars pythonvars
+  mapM_ putStrLn $ map makeConstraint a'
+--  mapM_ putStrLn $ map makeLine a'

@@ -27,37 +27,37 @@ prob += lpSum([60*a, 60*b, 60*c, 30*d, 30*e, 30*f, 50*g, 50*h, 50*j])
 
 nlist = []
 plist = []
-nlist += r
-plist += s
-prob += lpSum(plist) - lpSum(nlist) == 0
+plist += r
+nlist += s
+prob += lpSum(plist) - lpSum(nlist) >= 1
 nlist = []
 plist = []
 plist += a
 plist += p
 nlist += q
-plist += r
-nlist += s
-prob += lpSum(plist) - lpSum(nlist) == 0
+nlist += r
+plist += s
+prob += lpSum(plist) - lpSum(nlist) >= 0
 nlist = []
 plist = []
 plist += b
 nlist += p
 plist += q
-prob += lpSum(plist) - lpSum(nlist) == 0
+prob += lpSum(plist) - lpSum(nlist) >= 0
 nlist = []
 plist = []
 plist += c
-nlist += r
-plist += s
-prob += lpSum(plist) - lpSum(nlist) == 0
+plist += r
+nlist += s
+prob += lpSum(plist) - lpSum(nlist) >= 0
 nlist = []
 plist = []
 plist += d
 plist += l
 nlist += m
-plist += r
-nlist += s
-prob += lpSum(plist) - lpSum(nlist) == 0
+nlist += r
+plist += s
+prob += lpSum(plist) - lpSum(nlist) >= 0
 nlist = []
 plist = []
 plist += e
@@ -65,13 +65,13 @@ plist += j
 nlist += k
 nlist += l
 plist += m
-prob += lpSum(plist) - lpSum(nlist) == 0
+prob += lpSum(plist) - lpSum(nlist) >= 0
 nlist = []
 plist = []
 plist += f
 nlist += j
 plist += k
-prob += lpSum(plist) - lpSum(nlist) == 0
+prob += lpSum(plist) - lpSum(nlist) >= 0
 nlist = []
 plist = []
 plist += g
@@ -79,22 +79,25 @@ nlist += j
 plist += k
 plist += n
 nlist += o
-prob += lpSum(plist) - lpSum(nlist) == 0
+prob += lpSum(plist) - lpSum(nlist) >= 0
 nlist = []
 plist = []
 plist += h
 nlist += n
 plist += o
-prob += lpSum(plist) - lpSum(nlist) == 0
+prob += lpSum(plist) - lpSum(nlist) >= 0
 nlist = []
 plist = []
 plist += i
 plist += j
 nlist += k
-prob += lpSum(plist) - lpSum(nlist) == 0
+prob += lpSum(plist) - lpSum(nlist) >= 0
 
 prob.writeLP("dual.lp")
 prob.solve()
 
 print "Status: ", LpStatus[prob.status]
 print "Value: ", value(prob.objective)
+
+for var in [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s]:
+    print str(var),":", value(var)
