@@ -39,7 +39,7 @@
 \usetikzlibrary{shapes,arrows}
 
 \title{Advanced Algorithms and Data Structures\\Max-flow/linear programming}
-\author{Jens Raaby, Mads Hardmann \& Ulrik Rasmussen}
+\author{Jens Raaby, Mads Hartmann \& Ulrik Rasmussen}
 
 \begin{document}
 
@@ -86,9 +86,9 @@ maximum flow problem as a linear program:
 
 \begin{align*}
   \text{maximize} && \sum_{v\in V'} f_{sv} \\
-  \text{subject to} && f_{uv} \leq{}& c(u,v) & \text{for each $(u,v) \in E$}, \\
-                    && \sum_{v \in V'} f_{vu} ={}& \sum_{v \in V'} f_{uv} & \text{for each $u \in V - \{s, t \}$}, \\
-                    && f_{uv} \geq{}& 0 & \text{for each $(u, v) \in E$}.
+  \text{subject to} && f_{uv} \leq{}& c(u,v) & \text{for each $(u,v) \in E'$}, \\
+                    && \sum_{v \in V'} f_{vu} ={}& \sum_{v \in V'} f_{uv} & \text{for each $u \in V' - \{s, t \}$}, \\
+                    && f_{uv} \geq{}& 0 & \text{for each $(u, v) \in E'$}.
 \end{align*}
 
 where each variable $f_{uv}$ represents the value of $f(u,v)$ in the
