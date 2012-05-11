@@ -19,23 +19,23 @@ class flow():
 	# Creates an empty dictionary
 	def __init__(self):
 		self.flow = {}
-		
+
 	# Associate a capacity with a source and destination vertex
 	# Doesn't have to be a capacity you add here - could be any type of object
 	def connect(self,source,dest,capacity):
 		self.flow[(source,dest)] = capacity
-		
+
 	# Get the object stored between the source and dest vertices
 	def get(self,source,dest):
 		try:
 			return self.flow[(source,dest)]
 		except:
 			return 0
-	
+
 	# Return the data structure as a dictionary
 	def get_dict(self):
 		return self.flow
-		
+
 	# Return an iterator over edges
 	def get_list(self):
 		return self.flow.iteritems()
@@ -97,7 +97,7 @@ source_connected = []
 for var in variables:
 	if var[0] == "source":
 		source_connected.append(variables[var])
-		
+
 # Add the objective functions
 prob 		+= lpSum(source_connected), "Flow out of super source"
 prob_cost	+= lpSum(), "Minimise the overall cost"
@@ -116,8 +116,9 @@ for vertex in vertices:
 			flow_out.append(variables[var])
 	prob += lpSum(flow_in) - lpSum(flow_out) == 0, "Flow conservation for " + str(vertex)
 
-prob.writeLP("maxflow.lp")	
+prob.writeLP("maxflow.lp")
 prob.solve()
+
 print "Max flow Status: ", LpStatus[prob.status]
 print "Max flow Value: ", value(prob.objective)
 
