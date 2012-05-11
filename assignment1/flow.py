@@ -57,13 +57,9 @@ if (print_debug):
 	print "Vertices: "
 	print vertices
 
-# Begin problem definition using Pulp
-prob 		= LpProblem("Max flow network transfer problem",LpMaximize)
-prob_cost 	= LpProblem("Minimum cost flow network transfer problem",LpMinimize)
+# Reformat graphs as dictionaries: 
 variables 	= network.get_dict()
 costs 		= cost_network.get_dict()
-
-
 # Collect variables for the objective functions
 source_connected 	= [] # maximise the flow from the supersource
 cost_minimisation 	= [] # minimise the network transfer costs
@@ -75,12 +71,18 @@ for edge in variables:
 	# Collect the cost minimisation term for every edge:
 	cost_minimisation.append(costs[edge]*variables[edge])
 
+# Begin problem definition using Pulp
+prob 		= LpProblem("Max flow network transfer problem",LpMaximize)
+prob_cost 	= LpProblem("Minimum cost flow network transfer problem",LpMinimize)
+
 # Add the objective functions
 prob 		+= lpSum(source_connected), "Flow out of super source"
 prob_cost	+= lpSum(cost_minimisation), "Network transfer costs"
+#TODO try the cost minimisation as a LpAffineExpression
 
 # Add constraints on flow conservation
 for vertex in vertices:
+	# Ignore the flow conservation for the server or sink
 	if vertex == server or vertex == "supersource":
 		continue
 	# find all edges inward and outward:
@@ -114,7 +116,8 @@ print "Min cost Value: ", value(prob_cost.objective)
 
 print "The following costs were incurred by using external connections in the optimal solution"
 for edge in costs:
-	if not costs[edge] == 0: # only include the costly edges
+
+	if costs[edge] == 1: # only include the costly edges
 		optimal_cost = value(costs[edge])*value(variables[edge])
 		optimal_flow = value(variables[edge])
 		print edge," cost: ",optimal_cost,"oere. Flow:",optimal_flow
