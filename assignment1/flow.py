@@ -40,16 +40,13 @@ class flow():
 	def get_list(self):
 		return self.flow.iteritems()
 
-myflow = flow()
-for edge in edges:
-	myflow.connect(edge['u'],edge['v'],edge['c'])
-
-
 
 #print myflow.get_dict()
 network = flow()
+cost_network = flow()
 vertices = set()
 
+# Identify the vertices which are special:
 workstations = set(range(0,6))
 external_relays = set(range(20,27))
 server = 19
@@ -67,8 +64,15 @@ for edge in edges:
 	network.connect(u,v,LpVariable(str(u) + "_to_" + str(v),lower,upper))
     # Store the antiparallel edge too:
 	network.connect(v,u,LpVariable(str(v) + "_to_" + str(u),lower,upper))
+	# Store a cost constraint
+	if u in external_relays or v in external_relays:
+		cost_network.connect(u,v,LpVariable("Expensive_" + str(u) + "_to_" + str(v),1,1))
+		cost_network.connect(v,u,LpVariable("Expensive_" + str(v) + "_to_" + str(u),1,1))
+	else: # All internal connections must be free (zero cost)
+		cost_network.connect(u,v,LpVariable("Free_" + str(u) + "_to_" + str(v),0,0))
+		cost_network.connect(v,u,LpVariable("Free_" + str(v) + "_to_" + str(u),0,0))
 
-# add a super source to nodes 0 to 5
+# add a super source to workstations
 if not simple:
 	vertices.add("source")
 	for src in workstations:
@@ -78,12 +82,15 @@ if not simple:
 # Check it's all in the data structure
 if (print_debug):
 	print network.get_dict()
+	print cost_network.get_dict()
 	print vertices
 
 # Begin solving using Pulp
 prob = LpProblem("Max flow network transfer problem",LpMaximize)
-
+prob_cost = LpProblem("Minimum cost flow network transfer problem",LpMinimize)
 variables = network.get_dict()
+cost_variables = cost_network.get_dict()
+
 
 # Collect all the flow out of the source - note nothing flows in
 source_connected = []
@@ -91,8 +98,9 @@ for var in variables:
 	if var[0] == "source":
 		source_connected.append(variables[var])
 		
-# Add the objective function
-prob += lpSum(source_connected), "Flow out of super source"
+# Add the objective functions
+prob 		+= lpSum(source_connected), "Flow out of super source"
+prob_cost	+= lpSum(), "Minimise the overall cost"
 
 # Add constraints on flow conservation
 for vertex in vertices:
@@ -110,5 +118,10 @@ for vertex in vertices:
 
 prob.writeLP("maxflow.lp")	
 prob.solve()
-print "Status: ", LpStatus[prob.status]
-print "Value: ", value(prob.objective)
+print "Max flow Status: ", LpStatus[prob.status]
+print "Max flow Value: ", value(prob.objective)
+
+# Print out the actual flows:
+if print_debug:
+	for var in variables:
+		print value(variables[var])
