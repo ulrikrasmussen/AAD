@@ -236,28 +236,67 @@ variables are zero.
 
 \section*{Question 6}
 
-
-
+The dual program seems to choose a subset of variables representing
+the edges of the flow graph, such that the sum of the capacities of
+the chosen variables are minimized. Intuitively, this is exactly the
+definition of the min-cut problem, i.e. the dual variables $y_{uv}$
+that are set to one corresponds to the critical edges of the flow
+graph.
 
 \section*{Question 7}
 
+This is given as (29.51) in Cormen. Specialized to our problem, we get
+\begin{align*}
+\text{minimize} && \sum_{(u,v) \in E'} a(u,v) f_{uv} \\
+\text{subject to} && f_{uv} &\leq c(u,v) && \text{for each $(u,v) \in E'$} \\
+                  && \sum_{v \in V'} f_{vu} - \sum_{v \in V'} f_{uv} &= 0 && \text{for each $u \in V' - \{s, t \}$} \\
+                  && \sum_{v \in V'} f_{sv} - \sum_{v \in V'} f_{vs} &= d && \text{for each $(u,v) \in E'$} \\
+                  && f_{uv} &\geq 0 && \text{for each $(u,v) \in E'$}
+\end{align*}
+where we define $a(u,v) = 1$ iff $u$ represents a company node, and
+$v$ an external node, or vice versa. Otherwise, we set $a(u,v) =
+0$. The value $d$ is the maximum flow.
+
 \section*{Question 8}
-The maximum bit-rate obtained for the given network was found to be 95. The minimum cost of leasing network from the external relays was  60 oere.
+The maximum bit-rate obtained for the given network was found to be
+95. The minimum cost of leasing network from the external relays was
+60 øre.
 
-In order to find these values for the supplied network, we wrote a simple Python script using the puLP library as before.
-First of all, the script imports a file describing the edge capacities (this was created from the supplied Java class). We created a graph class which can hold any object between 2 vertices. Two graphs are populated: one containing Linear Programming variables for each edge (specifying the lower and upper capacity bounds); the other graph contains the cost of sending a byte across that edge. We assumed that all edges have a cost of 0 apart from those which cross to or from one of the relay stations (edges with a connection to vertices 20-26), which have a cost of 1.
-Since the network connections are bi-directional, an additional variable was created for each edge to allow antiparallel flow (this excludes flow back to the super source)
-A single super-source was added with edges to the 5 workstations and no upper bound on their edges.
+In order to find these values for the supplied network, we wrote a
+simple Python script using the puLP library as before.  First of all,
+the script imports a file describing the edge capacities (this was
+created from the supplied Java class). We created a graph class which
+can hold any object between 2 vertices. Two graphs are populated: one
+containing Linear Programming variables for each edge (specifying the
+lower and upper capacity bounds); the other graph contains the cost of
+sending a byte across that edge. We assumed that all edges have a cost
+of 0 apart from those which cross to or from one of the relay stations
+(edges with a connection to vertices 20-26), which have a cost of 1.
+Since the network connections are bi-directional, an additional
+variable was created for each edge to allow antiparallel flow (this
+excludes flow back to the super source). A single super-source was
+added with edges to the 5 workstations and no upper bound on their
+edges.
 
-The 2 related problems were then defined in terms of their objective functions and other constraints. The objective function for maximum bitrate is simply maximising the flow through all edges leaving the supersource. The objective function for minimising the leasing price is minimising the cost per byte across each edge. Mathematically:
+The 2 related problems were then defined in terms of their objective
+functions and other constraints. The objective function for maximum
+bitrate is simply maximising the flow through all edges leaving the
+supersource. The objective function for minimising the leasing price
+is minimising the cost per byte across each edge. Mathematically:
 \begin{equation*}
 \sum_{(u,v) \in E} a(u,v) f_{uv}
 \end{equation*}
 where $a(u,v)$ is the cost-per-byte across the edge from $u$ to $v$.
 
-The remaining constraints were added to both problems. They share the flow conservation constraints, but the minimising cost problem has the extra constraint that the flow from the source must be the optimal flow for the network. This value was retrieved directly after solving the maximisation problem.
+The remaining constraints were added to both problems. They share the
+flow conservation constraints, but the minimising cost problem has the
+extra constraint that the flow from the source must be the optimal
+flow for the network. This value was retrieved directly after solving
+the maximisation problem.
 
-The flow for both problems happened to have the same solution, so running the minimal-cost-flow problem did not help reduce the cost.
+The flow for both problems happened to have the same solution, so
+running the minimal-cost-flow problem did not help reduce the cost.
+
 \bibliographystyle{abbrv}
 \bibliography{bibliography}
 \end{document}
