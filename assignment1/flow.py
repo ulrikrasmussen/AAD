@@ -76,7 +76,6 @@ for edge in variables:
 prob 		= LpProblem("Max flow network transfer problem",LpMaximize)
 prob_cost 	= LpProblem("Minimum cost flow network transfer problem",LpMinimize)
 
-
 # Add the objective functions
 prob 		+= lpSum(source_connected), "Flow out of super source"
 prob_cost	+= lpSum(cost_minimisation), "Network transfer costs"
@@ -118,6 +117,7 @@ print "Min cost Value: ", value(prob_cost.objective)
 
 print "The following costs were incurred by using external connections in the optimal solution"
 for edge in costs:
+
 	if costs[edge] == 1: # only include the costly edges
 		optimal_cost = value(costs[edge])*value(variables[edge])
 		optimal_flow = value(variables[edge])
