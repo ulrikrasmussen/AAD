@@ -1,8 +1,9 @@
 import json,sys
 from pulp import *
+import graph
 
+# Do you want to print out lots of edge details?
 print_debug = False
-
 
 # Import the graph json file
 filename = "network.json"
@@ -10,57 +11,29 @@ f = open(filename, "r")
 edges = json.load(f)["edges"]
 f.close()
 
-# Flow objects contain the connections for a flow network
-class flow():
-	# Creates an empty dictionary
-	def __init__(self):
-		self.flow = {}
+# Create some data structures for storing edge variables
+network = graph.graph()
+cost_network = graph.graph()
 
-	# Associate a capacity with a source and destination vertex
-	# Doesn't have to be a capacity you add here - could be any type of object
-	def connect(self,source,dest,capacity):
-		self.flow[(source,dest)] = capacity
-
-	# Get the object stored between the source and dest vertices
-	def get(self,source,dest):
-		try:
-			return self.flow[(source,dest)]
-		except:
-			return 0
-
-	# Return the data structure as a dictionary
-	def get_dict(self):
-		return self.flow
-
-	# Return an iterator over edges
-	def get_list(self):
-		return self.flow.iteritems()
-
-
-#print myflow.get_dict()
-network = flow()
-cost_network = flow()
+# Identify the vertices using sets
 vertices = set()
-
-# Identify the vertices which are special:
 workstations = set(range(0,6))
 external_relays = set(range(20,27))
 server = 19
 
 # create capacity constraints
 for edge in edges:
-	# Get the vertices
-	u, v = edge['u'], edge['v']
+	# Deal with the vertices
+	u, v, capacity = edge['u'], edge['v'], edge['c']
 	vertices.add(u)
 	vertices.add(v)
 	# Set the bounds on the edge
-	lower = 0
-	upper = edge['c']
+	lower, upper = 0, capacity
 	# Store a LP variable for this edge
 	network.connect(u,v,LpVariable(str(u) + "_to_" + str(v),lower,upper))
     # Store the antiparallel edge too:
 	network.connect(v,u,LpVariable(str(v) + "_to_" + str(u),lower,upper))
-	# Store a cost constraint
+	# Store a cost constraint if the edge leaves the internal network
 	if u in external_relays or v in external_relays:
 		cost_network.connect(u,v,1)
 		cost_network.connect(v,u,1)
@@ -69,53 +42,58 @@ for edge in edges:
 		cost_network.connect(v,u,0)
 
 # add a super source to workstations
-vertices.add("source")
+vertices.add("supersource")
 for src in workstations:
-	# note no upper bound is specified!
-	network.connect("source",src,LpVariable("source_to_"+str(src),0,None))
-	cost_network.connect("source",src,0)
+	# note no upper bound on capacity is specified!
+	network.connect("supersource",src,LpVariable("supersource_to_"+str(src),0,None))
+	cost_network.connect("supersource",src,0)
 
 # Check it's all in the data structure
 if (print_debug):
+	print "Capacity constraints per edge: "
 	print network.get_dict()
+	print "Costs per edge:"
 	print cost_network.get_dict()
+	print "Vertices: "
 	print vertices
 
-# Begin solving using Pulp
-prob 		= LpProblem("Max flow network transfer problem",LpMaximize)
-prob_cost 	= LpProblem("Minimum cost flow network transfer problem",LpMinimize)
+# Reformat graphs as dictionaries: 
 variables 	= network.get_dict()
 costs 		= cost_network.get_dict()
-dupvariables= network.get_dict()
-
-
 # Collect variables for the objective functions
 source_connected 	= [] # maximise the flow from the supersource
 cost_minimisation 	= [] # minimise the network transfer costs
 
-for var in variables:
+for edge in variables:
 	# Add the source-connected edges for flow maximisation
-	if var[0] == "source":
-		source_connected.append(variables[var])
+	if edge[0] == "supersource":
+		source_connected.append(variables[edge])
 	# Collect the cost minimisation term for every edge:
-	cost_minimisation.append(costs[var]*variables[var])
+	cost_minimisation.append(costs[edge]*variables[edge])
+
+# Begin problem definition using Pulp
+prob 		= LpProblem("Max flow network transfer problem",LpMaximize)
+prob_cost 	= LpProblem("Minimum cost flow network transfer problem",LpMinimize)
+
 
 # Add the objective functions
 prob 		+= lpSum(source_connected), "Flow out of super source"
 prob_cost	+= lpSum(cost_minimisation), "Network transfer costs"
+#TODO try the cost minimisation as a LpAffineExpression
 
 # Add constraints on flow conservation
 for vertex in vertices:
-	if vertex == server or vertex == "source":
+	# Ignore the flow conservation for the server or sink
+	if vertex == server or vertex == "supersource":
 		continue
-	# find all edges in:
+	# find all edges inward and outward:
 	flow_in  = []
 	flow_out = []
-	for var in variables:
-		if var[1] == vertex:
-			flow_in.append(variables[var])
-		elif var[0] == vertex:
-			flow_out.append(variables[var])
+	for edge in variables:
+		if edge[1] == vertex:
+			flow_in.append(variables[edge])
+		elif edge[0] == vertex:
+			flow_out.append(variables[edge])
 	flow_conservation = lpSum(flow_in) - lpSum(flow_out) == 0, "Flow conservation for " + str(vertex)
 	prob 		+= flow_conservation
 	prob_cost	+= flow_conservation
@@ -137,11 +115,12 @@ prob_cost.solve()
 print "Min cost Status: ", LpStatus[prob_cost.status]
 print "Min cost Value: ", value(prob_cost.objective)
 
-print "The following costs were incurreed by using external connections in the optimal solution"
-for cost in costs:
-	if not costs[cost] == 0: # only include the costly edges
-		optimal_cost = value(costs[cost])*value(variables[cost])
-		print cost,"optimal cost: ",value(costs[cost])*value(variables[cost])
+print "The following costs were incurred by using external connections in the optimal solution"
+for edge in costs:
+	if costs[edge] == 1: # only include the costly edges
+		optimal_cost = value(costs[edge])*value(variables[edge])
+		optimal_flow = value(variables[edge])
+		print edge," cost: ",optimal_cost,"oere. Flow:",optimal_flow
 
 # Print out the optimal flows:
 if print_debug:
