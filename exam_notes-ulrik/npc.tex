@@ -1,0 +1,60 @@
+\subsection{Problem examples}
+The following problems are NP-complete:
+\begin{itemize}
+\item Hamiltonian cycle (cycle that contains all edges of a graph). On
+  the other hand, finding an Euler tour is polynomial.
+\item Longest simple path. Shortest path is polynomial.
+\item 3-sat. 2-sat is polynomial!
+\end{itemize}
+
+\subsection{Definition of NPC}
+\begin{itemize}
+\item We define the complexity class NP as the problems that can be
+  decided in polynomial time by a non-deterministic turing
+  machine. Equivalently, it can also be defined as the problems that
+  can be verified in polynomial time.
+\item A problem H is NP-\emph{hard} if any problem in NP can be
+  reduced to an instance of H in polynomial time. I.e. H is at least
+  as hard as any problem in NP.
+\item An NP-Complete problem is an NP-hard problem that is also in NP.
+\end{itemize}
+
+\subsection{Showing NPC}
+\begin{itemize}
+\item Any optimization problem has a corresponding decision problem
+  that is at least as easy, or vice-versa, that the optimization
+  problem is at least as hard as the decision problem.
+\item All problems in NP are decision problems.
+\item Showing that a problem H is NPC amounts to showing that there
+  exists a polynomial time reduction from an exisiting NPC problem to
+  H, and also that H itself is in NP.
+\item A \emph{reduction} from A to B is a polynomial time algorithm
+  than converts a problem instance $\alpha$ in A to an instance
+  $\beta$ in B, for which it holds that $\alpha$ is accepted iff
+  $\beta$ is accepted.
+\end{itemize}
+
+\subsection{Polynomial time}
+\begin{itemize}
+\item Any problem instance $i$ has a \emph{concrete representation}
+  over some alphabet $\Sigma$. We almost always choose $\Sigma =
+  \{0,1\}$.
+\item A problem in P is a problem whose concrete instances $e(Q)$ can
+  be accepted by a polynomial time algorithm in $O(n^k)$ steps for
+  some encoding $e$. By simulating a turing machine for $cn^k$ steps
+  for some constant $c$, we can build a decider. Hence any problem in
+  P is decidable in polynomial time.
+\item The running time depends on the encoding.
+\item For some set $I$ of problem instances, we say that encodings
+  $e_1$ and $e_2$ are polynomially related if there exists
+  polynomially computable functions $f_{12}$ and $f_{21}$ which
+  convert instances $e_1(i)$ to $e_2(i)$ and vice-versa
+\end{itemize}
+
+
+\subsection{}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "notes"
+%%% End: 

@@ -1,0 +1,115 @@
+\subsection{Flow networks}
+\begin{itemize}
+\item A flow graph $G=(V,E)$ is a set of vertices $V$ and edges
+  $E$. Two nodes $s,t \in V$ are denoted the \emph{source} and
+  \emph{sink}, respectively. For all $u,v \in V$, if $(u,v) \in E$,
+  then $(v,u)\not\in E$.
+
+\item For all $u,v \in V$, the capacity $c(u,v) \geq 0$ is the amount
+  of flow that is allowed from $u$ to $v$. If $(u,v) \not\in E$,
+  $c(u,v) = 0$.
+
+\item A \emph{flow} $f$ is a function $V \times V \rightarrow
+  \mathcal{R}$. It follows:
+  \begin{description}
+  \item[Capacity constraint:] $\forall u,v \in V. 0 \leq f(u,v) \leq c(u,v)$.
+  \item[Flow conservation:] $\forall u \in V - \{s,t\}. \sum_{v\in V}
+    f(v,u) = \sum_{v\in V} f(u,v)$.
+  \end{description}
+
+\item The flow \emph{value} is defined by $|f| = \sum_{v\in V} f(s,v)
+  - \sum_{v\in V} f(v,s)$.
+
+\item \emph{Anti-parallel edges} are not allowed, but are
+  admissible. We can convert any graph with edges $(u,v), (v,u) \in E$
+  to a valid flow-graph by adding a node $v'$, and having $E' = (E -
+  \{(v,u)\}) \cup \{ (v,v'), (v', u) \}$, with $c(v,v') = c(v',u) =
+  c(v,u)$.
+
+\item Multiple sources and sinks are also admissible using
+  \emph{supersources} and \emph{supersinks} with infinite capacities
+  along all incoming and outgoing edges.
+\end{itemize}
+
+\subsection{The Ford-Fulkerson method}
+
+\begin{algorithm}
+\caption{The Ford-Fulkerson method}
+\begin{algorithmic}[1]
+\Procedure{Ford-Fulkerson-Method}{$G,s,t$}
+  \State initialize flow $f$ to $0$-flow.
+  \While{there is an augmenting path $p$ in the residual network $G_f$}
+    \State augment flow $f$ along $p$
+  \EndWhile
+  \State \Return $f$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\begin{itemize}
+\item \todo{Prepare visual example} The \emph{residual} network $G_f$
+  for a flow-graph $G$ with flow $f$ captures how we can change the
+  flow on edges of $G$.
+\item $G_f = (V,E')$ contains all vertices of $G$. The capacities
+  $c_f(\cdot, \cdot)$ are defined by
+  $$
+    c_f(u,v) = \left\{\begin{array}{l l}
+                 c(u,v) - f(u,v) & \text{if $(u,v) \in E$,} \\
+                 f(v,u)          & \text{if $(v,u) \in E$,} \\
+                 0               & \text{otherwise}.
+               \end{array} \right.
+  $$
+  We have $c(u,v) > 0$ iff $(u,v) \in E'$.
+
+\item Given a flow $f$ in $G$ and a flow $f'$ in $G_f$, the
+  \emph{augmented} flow $f \uparrow f'$ is defined by
+  $$
+  (f \uparrow f')(u,v) = \left\{\begin{array}{l l}
+                           f(u,v) + f'(u,v) - f'(v,u) & \text{if $(u,v) \in E$}, \\
+                           0 & \text{otherwise}.
+                         \end{array}\right.
+  $$
+  It is easy to show that $|f \uparrow f'| = |f| + |f'|$.
+\end{itemize}
+
+\subsection{Cuts}
+\begin{itemize}
+\item Required for proving the max-flow min-cut theorem.
+\item A cut $(S,T)$ is a partition of $V$ such that $S \subset V$, $T
+  = V - S$, $s \in S$ and $t \in T$.
+\item The \emph{net flow} of a cut is given by
+  $$
+    f(S,T) = \sum_{u\in S} \sum_{v \in T} f(u,v) - \sum_{u \in S} \sum_{v \in T} f(v,u).
+  $$
+\item The capacity of a cut is given by
+  $$
+    c(S,T) = \sum_{u\in S} \sum_{v \in T} c(u,v).
+  $$
+\item A \emph{minimum cut} is the cut with the smallest capacity among
+  all cuts in the network.
+
+\item \todo{Exercise proof} For a given flow $f$ in $G$ and any cut
+  $(S,T)$, we have $f(S,T) = |f|$.
+
+\item \todo{Exercise proof} For a flow $f$ in $G$, then for any cut
+  $(S,T)$, $|f|$ is bounded by $c(S,T)$.
+
+\item \todo{Exercise proof} If $f$ is a flow in $G = (V,E)$ with
+  source $s$ and sink $t$, then the following are equivalent:
+  \begin{enumerate}
+  \item $f$ is a max flow in $G$.
+  \item The residual network $G_f$ contains no augmenting paths.
+  \item $|f| = c(S,T)$ for some cut $(S,T)$ of $G$.
+  \end{enumerate}
+\end{itemize}
+
+\subsection{Ford-Fulkerson algorithm}
+\begin{itemize}
+\item \todo{Prepare example} Basically an expansion of the Ford-Fulkerson method.
+\end{itemize}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "notes"
+%%% End:

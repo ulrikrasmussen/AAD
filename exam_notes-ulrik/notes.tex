@@ -1,0 +1,50 @@
+\documentclass[a4paper, 10pt, oneside, article]{memoir}
+\chapterstyle{culver}
+\checkandfixthelayout
+\usepackage{lipsum}
+\usepackage{palatino}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage[english]{babel}
+\usepackage{bbm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage{multirow}
+%\usepackage{algorithmicx}
+\usepackage[section]{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{todonotes}
+
+% Remove chapters from figure counters
+%\counterwithout{figure}{chapter}
+% Add sections instead
+%\counterwithin{figure}{section}
+\counterwithout{section}{chapter}
+
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+
+\title{Advanced Algorithms and Data Structures\\Exam notes}
+\author{Ulrik Rasmussen}
+
+\begin{document}
+
+\maketitle
+
+\section{Max flow}
+
+\input{maxflow}
+\newpage
+
+\section{Linear programming}
+
+\input{linearprogramming}
+\newpage
+
+\section{NP-Completeness}
+
+\input{npc}
+
+\end{document}
