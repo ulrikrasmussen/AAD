@@ -38,12 +38,43 @@
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows}
 
-\title{Advanced Algorithms and Data Structures\\Max-flow/linear programming}
+\title{Advanced Algorithms and Data Structures\\ Branch and Bound}
 \author{Jens Raaby, Mads Hartmann \& Ulrik Rasmussen}
 
 \begin{document}
 
 \maketitle
+
+\section*{Question 1}
+
+% TODO: We probably need to make this more mathy
+%       but the intuition should be sound 
+
+Given a graph $G$ a 1-tree bound is defined as follows 
+
+\begin{itemize}
+  \item You select a vertex $v_1$ from $G$
+  \item Remove all edges incident on $v_1$ from $G$ producing $G'$
+  \item Find the minimum spanning tree $T$ of $G'$
+  \item Add the two smallest edges $e_1$ and $e_2$ incident on $v_1$ to $T$ producing a 1-tree $T_1$
+\end{itemize}
+
+We're asked to show that the 1-tree is a lower bound for TSP; that is,
+that the weight of the Hamiltonian tour of G with the lowest weight
+is equal to or greater than weight  of $T_1$.
+
+If we assume we have a Hamiltonian tour of $G$ that has has a lower
+weight than the $T_1$ then it would require that there exists a
+spanning tree of $G'$ that  has a lower wight than $T$; this is
+impossible since $T$ is a minimum spanning tree. Here's why: A Hamiltonian
+tour of $G$ will also need to be a Hamiltonian path of $G'$. In the best case 
+the Hamiltonian path $H$ and the minimum spanning tree $T$ will be the same. Since we're
+adding the two edges $e_1, e_2$ with the lowest weight then the only way for
+$TSP$ to have a lower weight than $T_1$ would be if the weight of $H$ was smaller 
+than $T$; a contradiction.
+
+
+
 
 
 \bibliographystyle{abbrv}
