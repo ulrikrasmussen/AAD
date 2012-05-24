@@ -46,6 +46,24 @@
 \maketitle
 
 
+\section*{Question 2}
+In this part we consider representing each monument as a circle, so that when all circles are maximum size and do not overlap we have a way of travelling to each monument by entering and leaving every circle.
+
+To form a linear program to maximise the radii of these circles, it is a simple matter of representing each monument with a radius variable and adding constraints such that any two circles to not overlap.
+
+\begin{align*}
+  \text{maximize} && \sum_{v\in V} radius_{v} \\
+  \text{subject to} && radius_{u} + radius_{v} \leq{}& distance(u,v) & \text{for each $(u,v) \in E$}, \\
+                    && r_{v} \geq{}& 0 & \text{for each $v \in V$}.
+\end{align*}
+
+\section*{Question 3}
+How do you compute a lower bound from these circles?
+
+Considering any single monument, its distance from any other monument is at least the radius of that monument's circle. Since visiting all the monuments requires both entering and leaving each of the circles, a lower bound for a TSP problem could be expressed as $2 \sum_{v \in V} radius_{v}$, in other words, double the sum of all the radii.
+This will be a fairly good lower bound if all the monuments are similar distances apart. However, if many of the monuments are located in small areas, then the radii will also be quite small. There may therefore be a much larger distance between these groups of monuments, meaning the actual TSP solution has a much higher cost.
+% See http://www.tsp.gatech.edu/methods/opt/zone.htm
+
 \bibliographystyle{abbrv}
 \bibliography{bibliography}
 \end{document}
