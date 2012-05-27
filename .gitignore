@@ -4,3 +4,6 @@
 *.pyc
 assignment1/*.lp
 /assignment2/nbproject/nbproject/private/
+/assignment2/javacode/nbproject/private/
+/assignment2/tsp_java/nbproject/private/
+/assignment2/tsp_java/build/
