@@ -3,3 +3,4 @@
 *.pdf
 *.pyc
 assignment1/*.lp
+/assignment2/nbproject/nbproject/private/
