@@ -95,6 +95,54 @@ Considering any single monument, its distance from any other monument is at leas
 This will be a fairly good lower bound if all the monuments are similar distances apart. However, if many of the monuments are located in small areas, then the radii will also be quite small. There may therefore be a much larger distance between these groups of monuments, meaning the actual TSP solution has a much higher cost.
 % See http://www.tsp.gatech.edu/methods/opt/zone.htm
 
+
+\section*{Question 4}
+
+We can use the mixed integer linear formulation by Miller, Tucker and
+Zemlin to obtain a linear program of polynomial size with regards to
+the number of nodes in the TSP problem. In the following, $d_{ij}$
+denotes the distance from node $i$ to node $j$, and $x_{ij}$ is an
+integer variable in the domain $\{0, 1\}$, where $x_{ij} = 1$ iff the
+edge from node $i$ to $j$ is included in the solution. In addition,
+there are $|V|-1$ auxiliary variables $u_i$ in the domain of the real
+numbers, which are used to eliminate subtours:
+
+\begin{align*}
+  &\text{minimize} &&& \sum_{i\in V} \sum_{j \in V} d_{ij} x_{ij} \\
+  &\text{subject to} &&& \sum_{j \in V} x_{ij} ={}& 1 && \forall i \in V \\
+  &                  &&& \sum_{i \in V} x_{ij} ={}& 1 && \forall j \in V \\
+  &                  &&& u_i - u_j + |V| \cdot x_{ij} \leq{}& |V| - 1 && \forall i,j \in V - \{1\}  \\
+  &                  &&& u_i \geq{}& 0 && \forall i \in V - \{1\} \\
+  &                  &&& x_{ij} \in{}& \{0, 1\} && \forall i,j \in V
+\end{align*}
+
+The first two constraints ensures that each node has exactly one
+incoming and one outgoing edge that is included in the solution. The
+third constraint ensures that there is only a single tour in the
+solution, namely the tour beginning and ending at node $1$.
+
+
+\section*{Question 5}
+
+We can relax the above mixed integer linear program by allowing the
+edge variables $x_{ij}$ to take on real values. This yields the
+following linear program, which does not include integer variables,
+and hence can be solved efficiently:
+\begin{align*}
+  &\text{minimize} &&& \sum_{i\in V} \sum_{j \in V} d_{ij} x_{ij} \\
+  &\text{subject to} &&& \sum_{j \in V} x_{ij} ={}& 1 && \forall i \in V \\
+  &                  &&& \sum_{i \in V} x_{ij} ={}& 1 && \forall j \in V \\
+  &                  &&& u_i - u_j + |V| \cdot x_{ij} \leq{}& |V| - 1 && \forall i,j \in V - \{1\}  \\
+  &                  &&& u_i \geq{}& 0 && \forall i \in V - \{1\} \\
+  &                  &&& x_{ij} \leq{}& 1 && \forall i,j \in V \\
+  &                  &&& x_{ij} \geq{}& 0 && \forall i,j \in V
+\end{align*}
+
+The solution space for the original integer linear program is a subset
+of the solution space for the relaxed version. Hence an optimal
+solution to the relaxed program will be a lower bound for the integer
+solution.
+
 \bibliographystyle{abbrv}
 \bibliography{bibliography}
 \end{document}
