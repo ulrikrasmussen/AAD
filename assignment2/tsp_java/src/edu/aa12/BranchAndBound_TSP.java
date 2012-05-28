@@ -21,7 +21,7 @@ public class BranchAndBound_TSP {
 	}
 	
 	/** Find the shortest tour visiting all nodes exactly once and return the result as a BnBNode. */
-	public BnBNode solve(){
+	public BnBNode solve() throws Exception {
 		//Sorting edges by length might or might not help
 //		Collections.sort(graph.edges, new Comparator<Edge>(){
 //			public int compare(Edge arg0, Edge arg1) {
@@ -62,7 +62,7 @@ public class BranchAndBound_TSP {
 	 * if it does not result in a sub-tour, a vertex with degree more than 2, or a vertex where the degree 
 	 * can never become 2.    
 	 */ 
-	private void branch(BnBNode node, PriorityQueue<BnBNode> nodePool){
+	private void branch(BnBNode node, PriorityQueue<BnBNode> nodePool) throws Exception {
 		if(graph.edges.indexOf(node.edge)==graph.edges.size()-1) return;
 		
 		//Choose next edge to branch on. Uses the ordering in graph.edges.
@@ -119,7 +119,7 @@ public class BranchAndBound_TSP {
 	}
 	
 	/** Return a lower-bound for the node */
-	public double lowerBound(BnBNode node){
+	public double lowerBound(BnBNode node) throws Exception {
 		if(node.edgesDefined==graph.getVertices()) {
 			return objectiveValue(node);
 		}
