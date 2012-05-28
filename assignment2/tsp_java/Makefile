@@ -16,6 +16,8 @@ CLASSES = \
 		src/edu/aa12/Kruskal.java \
 		src/edu/aa12/lptest.java \
 		src/edu/aa12/MainMethods.java \
+		src/edu/aa12/OneTree.java \
+		src/edu/aa12/OneTreeBNB.java \
 		src/edu/aa12/Visualization.java
 
 default: classes
@@ -24,6 +26,9 @@ classes: $(CLASSES:.java=.class)
 
 run: classes
 	java -cp src edu.aa12.MainMethods
+
+onetree: classes
+	java -cp src edu.aa12.OneTree
 
 clean:
 		$(RM) src/edu/aa12/*.class

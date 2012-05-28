@@ -81,6 +81,13 @@ public class Instance3 extends Graph{
 		new double[]{2.51,-0.71},
 	};
 
+	/**
+	 * Written by us.
+	 */
+	public Graph copy() {
+		return new Instance3();
+	}
+
 	public Instance3(){
 		super(coords);
 

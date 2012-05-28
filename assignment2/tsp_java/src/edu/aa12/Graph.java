@@ -24,7 +24,7 @@ public abstract class Graph {
 		for(int i=0;i<n;i++) for(int j=0;j<n;j++) distances[i][j] = Double.POSITIVE_INFINITY;
 
 	}
-	
+		
 	public int getVertices(){ return vertexCoords.length; }
 	
 	public double getDistance(int i, int j){ return distances[i][j]; }
@@ -44,4 +44,10 @@ public abstract class Graph {
 		incidentEdges[j].add(e);
 		
 	}
+
+	/**
+	 * Written by us.
+	 */
+	abstract public Graph copy();
+
 }

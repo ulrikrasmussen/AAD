@@ -16,6 +16,13 @@ public class Instance1 extends Graph{
 			new double[]{1.89,-0.50},
 	};
 
+	/**
+	 * Written by us.
+	 */
+	public Graph copy() {
+		return new Instance1();
+	}
+
 	public Instance1(){
 		super(coords);
 		int n = vertexCoords.length;

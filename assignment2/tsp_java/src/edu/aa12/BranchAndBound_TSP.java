@@ -10,10 +10,10 @@ import edu.aa12.DisjointSet.DSNode;
  */
 public class BranchAndBound_TSP {
 	/** Finds the minimum spanning tree using Kruskals algorithm */
-	private final Kruskal kruskal = new Kruskal();
-	private final Graph graph;
+	protected final Kruskal kruskal = new Kruskal();
+	protected final Graph graph;
 	/** The number of BnBNodes generated */
-	private long nodesGenerated = 0;
+	protected long nodesGenerated = 0;
 	
 	/** Construct a problem instance */
 	public BranchAndBound_TSP(Graph g){
