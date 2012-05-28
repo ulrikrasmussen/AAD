@@ -19,6 +19,8 @@ CLASSES = \
 		src/edu/aa12/MainMethods.java \
 		src/edu/aa12/OneTree.java \
 		src/edu/aa12/OneTreeBNB.java \
+		src/edu/aa12/Relax.java \
+		src/edu/aa12/RelaxBNB.java \
 		src/edu/aa12/Visualization.java
 
 default: classes
@@ -30,6 +32,9 @@ run: classes
 
 onetree: classes
 	java -cp $(CLASSPATH) edu.aa12.OneTree
+
+relax: classes
+	LD_LIBRARY_PATH=. java -cp $(CLASSPATH) -Djava.library.path=. edu.aa12.Relax
 
 clean:
 		$(RM) src/edu/aa12/*.class
