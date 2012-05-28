@@ -1,8 +1,9 @@
 JFLAGS = -g
 JC = javac
+CLASSPATH = ./src:lpsolve55j.jar:ProGAL.jar
 .SUFFIXES: .java .class
 .java.class:
-		$(JC) -cp ./src:lpsolve55j.jar:ProGAL.jar $(JFLAGS) $*.java
+		$(JC) -cp $(CLASSPATH) $(JFLAGS) $*.java
 
 CLASSES = \
 		src/edu/aa12/BnBNode.java \
@@ -25,10 +26,10 @@ default: classes
 classes: $(CLASSES:.java=.class)
 
 run: classes
-	java -cp src edu.aa12.MainMethods
+	java -cp $(CLASSPATH) edu.aa12.MainMethods
 
 onetree: classes
-	java -cp src edu.aa12.OneTree
+	java -cp $(CLASSPATH) edu.aa12.OneTree
 
 clean:
 		$(RM) src/edu/aa12/*.class
