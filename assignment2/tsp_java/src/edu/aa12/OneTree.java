@@ -6,14 +6,13 @@ package edu.aa12;
 public class OneTree {
 
   public static void main(String[] args) {
-    
-    Graph g = new Instance1();
+    Graph g = new Instance2();
 
+    long start = System.nanoTime();
     BnBNode n = new OneTreeBNB(g).solve();
-
-    System.out.println("Yo dawg");
-    System.out.println(n);
-
+    long end = System.nanoTime();
+    System.out.printf("Took %.2fms\n",(end-start)/1000000.0);
+    Visualization.visualizeSolution(g, n);
   }
 }
 
