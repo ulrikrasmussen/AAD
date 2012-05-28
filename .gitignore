@@ -2,6 +2,7 @@
 *.log
 *.pdf
 *.pyc
+*.class
 assignment1/*.lp
 /assignment2/nbproject/nbproject/private/
 /assignment2/javacode/nbproject/private/
