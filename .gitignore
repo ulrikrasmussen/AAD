@@ -3,6 +3,9 @@
 *.pdf
 *.pyc
 *.class
+.DS_Store
+.tags
+.tags_sorted_by_file
 assignment1/*.lp
 /assignment2/nbproject/nbproject/private/
 /assignment2/javacode/nbproject/private/
