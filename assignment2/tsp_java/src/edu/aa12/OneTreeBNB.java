@@ -2,6 +2,8 @@ package edu.aa12;
 
 import java.util.Random;
 import java.util.List;
+import java.util.Collections;
+import java.util.ArrayList;
 
 public class OneTreeBNB extends BranchAndBound_TSP {
   
@@ -16,7 +18,7 @@ public class OneTreeBNB extends BranchAndBound_TSP {
     }
 
     Graph workingG = this.graph.copy();
-
+  
     // Select a random vertex v1 and remove incident edges
     int v1 = new Random().nextInt(workingG.getVertices()-1);
     workingG.edges.removeAll(workingG.incidentEdges[v1]);
@@ -28,19 +30,15 @@ public class OneTreeBNB extends BranchAndBound_TSP {
       sum += workingG.getLength(e);
     }
 
-    double e1 = Double.MAX_VALUE;
-    double e2 = Double.MAX_VALUE;
+    // Sort the list of lengths
+    List<Double> lengths = new ArrayList<Double>();
     for (Edge e : workingG.incidentEdges[v1]) {
-      double length = workingG.getLength(e);
-      if (length < e1) {
-        e1 = length;
-      } else if (length < e2) {
-        e2 = length;
-      }
+      lengths.add(workingG.getLength(e));
     }
 
-    sum += e1;
-    sum += e2;
+    Collections.sort(lengths);
+    sum += lengths.get(0);
+    sum += lengths.get(1);
 
     return sum;
   }

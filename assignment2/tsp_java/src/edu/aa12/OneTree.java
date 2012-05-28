@@ -12,7 +12,7 @@ public class OneTree {
     BnBNode n = new OneTreeBNB(g).solve();
     long end = System.nanoTime();
     System.out.printf("Took %.2fms\n",(end-start)/1000000.0);
-    Visualization.visualizeSolution(g, n);
+    // Visualization.visualizeSolution(g, n);
   }
 }
 
