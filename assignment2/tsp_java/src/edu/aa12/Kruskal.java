@@ -50,27 +50,27 @@ public class Kruskal {
 	}
 	
 	
-//	public List<Edge> minimumSpanningTree(final Graph g, List<Edge> edges){
-//		
-//		List<Edge> ret = new ArrayList<Edge>(edges);
-//		Collections.sort(edges, new Comparator<Edge>(){
-//			public int compare(Edge o1, Edge o2) {
-//				return Double.compare(g.getDistance(o1.u, o1.v), g.getDistance(o2.u, o2.v));
-//			}});
-//		
-//		for(Edge e: edges){
-//			nodes[e.u] = ds.makeSet(e.u);
-//			nodes[e.v] = ds.makeSet(e.v); 
-//		}
-//		for(Edge e: edges){
-//			if(ds.find(nodes[e.u])!=ds.find(nodes[e.v])){
-//				ds.union(nodes[e.u], nodes[e.v]);
-//			}else{
-//				ret.remove(e);
-//			}
-//		}
-//		
-//		return ret;
-//	}
+	public List<Edge> minimumSpanningTree2(final Graph g, List<Edge> edges){
+		
+		List<Edge> ret = new ArrayList<Edge>(edges);
+		Collections.sort(edges, new Comparator<Edge>(){
+			public int compare(Edge o1, Edge o2) {
+				return Double.compare(g.getDistance(o1.u, o1.v), g.getDistance(o2.u, o2.v));
+			}});
+		
+		for(Edge e: edges){
+			nodes[e.u] = ds.makeSet(e.u);
+			nodes[e.v] = ds.makeSet(e.v); 
+		}
+		for(Edge e: edges){
+			if(ds.find(nodes[e.u])!=ds.find(nodes[e.v])){
+				ds.union(nodes[e.u], nodes[e.v]);
+			}else{
+				ret.remove(e);
+			}
+		}
+		
+		return ret;
+	}
 	
 }
