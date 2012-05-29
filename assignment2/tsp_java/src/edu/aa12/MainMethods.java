@@ -2,13 +2,13 @@ package edu.aa12;
 
 public class MainMethods {
 
-	public static void main(String[] args){
+	public static void main(String[] args) throws Exception {
 		solveGraph(new Instance1());
 		solveGraph(new Instance2());
 		solveGraph(new Instance3());
 	}
 	
-	public static void solveGraph(Graph g){
+	public static void solveGraph(Graph g) throws Exception {
 		BranchAndBound_TSP solver = new BranchAndBound_TSP(g);
 		long start = System.nanoTime();
 		BnBNode n = solver.solve();

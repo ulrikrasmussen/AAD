@@ -5,7 +5,7 @@ package edu.aa12;
  */
 public class OneTree {
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     Graph g = new Instance2();
 
     long start = System.nanoTime();

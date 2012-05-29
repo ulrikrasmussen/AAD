@@ -15,7 +15,7 @@ import ProGAL.geom2d.viewer.TextShape;
  */
 public class Visualization {
 	
-	public static void main(String[] args){
+	public static void main(String[] args) throws Exception {
 		Graph g = new Instance2();
 		
 		visualizeSolution(g, new BranchAndBound_TSP(g).solve());
