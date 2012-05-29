@@ -1,15 +1,15 @@
 package edu.aa12;
 
 /**
- * Implementation of the 1-tree lower-bound algorithm.
+ * Implementation of the ILP relaxation lower bound
  */
-public class OneTree2 {
+public class Radius {
 
   public static void main(String[] args) throws Exception {
-    Graph g = new Instance2();
+    Graph g = new Instance1();
 
     long start = System.nanoTime();
-    BnBNode n = new OneTreeBNB2(g).solve();
+    BnBNode n = new RadiusBNB(g).solve();
     long end = System.nanoTime();
     System.out.printf("Took %.2fms\n",(end-start)/1000000.0);
     Visualization.visualizeSolution(g, n);
