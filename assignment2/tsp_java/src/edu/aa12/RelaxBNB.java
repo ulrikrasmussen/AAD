@@ -56,22 +56,27 @@ public class RelaxBNB extends BranchAndBound_TSP {
         LpSolve lp = this.solver.copyLp();
         int n = this.graph.getVertices();
 
-        for (BnBNode current = node; current.edge != null; current = current.parent) {
+        for (BnBNode current = node; current.parent != null; current = current.parent) {
             double x = current.edgeIncluded ? 1 : 0;
             Edge e = current.edge;
-            if (e != null) {
-                lp.addConstraintex(1, new double[] { 1 }
-                                  , new int[] { e.u*n + e.v }
-                                  , LpSolve.EQ, x);
-            }
+            lp.addConstraintex( 1
+                              , new double[] { 1 }
+                              , new int[] { e.u*n + e.v }
+                              , LpSolve.EQ, x);
         }
         int ret = lp.solve();
         double result = lp.getObjective();
 
         if (ret == 0)
             return result;
+
+        // If the relaxed LP is infeasible, then so is the original
+        //   ILP. We can prune away this partition of the solution space.
         if (ret == 2)
             return Double.POSITIVE_INFINITY;
-        throw new Exception(""+ret);
+
+        // The lp_solve library can detect numerical errors or other
+        //   problems. When this happens, we fail.
+        throw new Exception("Unknown return code: " + ret);
     }
 }
