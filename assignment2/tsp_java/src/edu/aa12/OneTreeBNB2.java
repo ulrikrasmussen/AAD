@@ -38,8 +38,22 @@ public class OneTreeBNB2 extends BranchAndBound_TSP {
                 incidentEdges.remove(cur.edge);
         }
 
+        // Find sizes of components
+        int[] compSizes = new int[this.graph.getVertices()];
+        for (int i = 0; i < graph.getVertices(); i++) {
+            compSizes[(int)ds.find(nodes[i]).object]++;
+        }
+
+        // Find largest component
+        int maxCompIndex = 0;
+        for (int i = 0; i < graph.getVertices(); i++) {
+            if (compSizes[i] > compSizes[maxCompIndex])
+                maxCompIndex = i;
+        }
+
         // Select a random vertex v1
-        DSNode v1 = ds.find(nodes[new Random().nextInt(graph.getVertices())]);
+        //DSNode v1 = ds.find(nodes[new Random().nextInt(graph.getVertices())]);
+        DSNode v1 = ds.find(nodes[maxCompIndex]);
 
         // Filter out all edges that are not incident to the connected
         //   component the vertex is in
@@ -59,7 +73,8 @@ public class OneTreeBNB2 extends BranchAndBound_TSP {
         // Find the sum of the length of the edges in the minimum
         //   spanning tree of the new graph.
         double sum = 0;
-        for (Edge e : this.kruskal.minimumSpanningTree(workingG,node)) {
+        List<Edge> mstEdges = this.kruskal.minimumSpanningTree(workingG,node);
+        for (Edge e : mstEdges) {
             sum += workingG.getLength(e);
         }
 
@@ -82,6 +97,7 @@ public class OneTreeBNB2 extends BranchAndBound_TSP {
             // assert that the above comment is true
             assert (incidentEdges.size() == 0)
                 : "incident edge count is non-zero : " + incidentEdges.size();
+            assert (mstEdges.size() == 0);
         }
 
         return objectiveValue(node) + sum;
