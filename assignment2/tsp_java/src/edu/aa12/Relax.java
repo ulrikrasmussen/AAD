@@ -1,7 +1,7 @@
 package edu.aa12;
 
 /**
- * Implementation of the 1-tree lower-bound algorithm.
+ * Implementation of the ILP relaxation lower bound
  */
 public class Relax {
 
