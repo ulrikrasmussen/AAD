@@ -225,10 +225,13 @@ Relax       & 1377 & 90 & 70362 \\
 
 This lower bound method did not perform very well for the large graph
 instance. The reason for this could be that the 1-tree does not give
-any guarantees of the size of the cycle that it containsl, just that
-it \emph{will} contain a cycle. The 1-tree therefore will not
-necessarily have any structure in common with the optimal solution,
-causing it to underestimate the lower bound considerably.
+any guarantees of the size of the cycle that it contains, just that it
+\emph{will} contain a cycle. The 1-tree therefore will not necessarily
+have any structure in common with the optimal solution, causing it to
+underestimate the lower bound considerably.
+
+We are not sure what can be done to improve this, but maybe a more
+intelligent choice of the $1$-node will improve the lower bound.
 
 
 \subsection{radius}
@@ -249,6 +252,11 @@ the edges.
 
 This lower bound method performed fairly well with regards to the
 number of nodes evaluated.
+
+We are not sure how to improve this lower bound either, but one could
+try to find more constraints to add to the linear program which would
+still result in solutions being a lower bound for TSP, but which would
+constrict the potential solution space.
 
 
 \bibliographystyle{abbrv}
