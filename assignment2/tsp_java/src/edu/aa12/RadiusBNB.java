@@ -1,7 +1,10 @@
 package edu.aa12;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import lpsolve.LpSolve;
+
+import edu.aa12.DisjointSet.DSNode;
 
 public class RadiusBNB extends BranchAndBound_TSP {
     LpSolve solver;
@@ -14,13 +17,13 @@ public class RadiusBNB extends BranchAndBound_TSP {
         solver.setVerbose(2);
         solver.setMaxim();
         solver.setAddRowmode(true);
-        
+
         double[] radii = new double[n+1];
         Arrays.fill(radii, 2);
         solver.setObjFn(radii);
 
         // need to check the constraint indexing
-        /* also, look at moving all this to the lower bound method 
+        /* also, look at moving all this to the lower bound method
          * rather than the constructor
         */
         double[] row = new double[n+1];
@@ -33,7 +36,7 @@ public class RadiusBNB extends BranchAndBound_TSP {
             System.out.println(e);
             solver.addConstraint(row, LpSolve.LE, g.getLength(e));
         }
-        
+
         for (int i = 0; i<n; i++) {
             Arrays.fill(row,0);
             row[i+1] = 1;
@@ -43,26 +46,44 @@ public class RadiusBNB extends BranchAndBound_TSP {
         solver.writeLp("radius.lp");
     }
 
+    DisjointSet ds = new DisjointSet();
+
     public double lowerBound(BnBNode node) throws Exception {
         if (node.edgesDefined == this.graph.getVertices()) {
             return objectiveValue(node);
         }
 
+        // Find connected components arising from the set of chosen edges
+        DSNode[] nodes = new DSNode[graph.getVertices()];
+        for (int i = 0; i < graph.getVertices(); i++)
+            nodes[i] = ds.makeSet(i);
+
+        HashSet<Integer> forcedNodes = new HashSet<Integer>();
+        for (BnBNode cur = node; cur.parent != null; cur = cur.parent) {
+            ds.union(nodes[cur.edge.u], nodes[cur.edge.v]);
+            forcedNodes.add(cur.edge.u);
+            forcedNodes.add(cur.edge.v);
+        }
+
         LpSolve lp = this.solver.copyLp();
-        
-        int ret = lp.solve();
-        double result = lp.getObjective();
+        try {
+            int ret = lp.solve();
 
-        if (ret == 0)
-            return result;
+            if (ret == 0) {
+                return lp.getObjective();
+            }
 
-        // If the relaxed LP is infeasible, then so is the original
-        //   ILP. We can prune away this partition of the solution space.
-        if (ret == 2)
-            return Double.POSITIVE_INFINITY;
+            // If the relaxed LP is infeasible, then so is the original
+            //   ILP. We can prune away this partition of the solution space.
+            if (ret == 2) {
+                return Double.POSITIVE_INFINITY;
+            }
 
-        // The lp_solve library can detect numerical errors or other
-        //   problems. When this happens, we fail.
-        throw new Exception("Unknown return code: " + ret);
+            // The lp_solve library can detect numerical errors or other
+            //   problems. When this happens, we fail.
+            throw new Exception("Unknown return code: " + ret);
+        } finally {
+            lp.deleteLp();
+        }
     }
 }
