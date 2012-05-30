@@ -7,7 +7,7 @@ public class MainMethods {
 		solveGraph(new Instance2());
 		solveGraph(new Instance3());
 	}
-	
+
 	public static void solveGraph(Graph g) throws Exception {
 		BranchAndBound_TSP solver = new BranchAndBound_TSP(g);
 		long start = System.nanoTime();

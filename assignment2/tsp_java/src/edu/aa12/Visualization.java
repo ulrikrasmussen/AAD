@@ -10,31 +10,31 @@ import ProGAL.geom2d.viewer.J2DScene;
 import ProGAL.geom2d.viewer.TextShape;
 
 
-/** 
- * Class for visualizing solutions. Requires ProGAL (www.diku.dk/~rfonseca/ProGAL) to be in the class-path. 
+/**
+ * Class for visualizing solutions. Requires ProGAL (www.diku.dk/~rfonseca/ProGAL) to be in the class-path.
  */
 public class Visualization {
-	
+
 	public static void main(String[] args) throws Exception {
-		Graph g = new Instance2();
-		
-		visualizeSolution(g, new BranchAndBound_TSP(g).solve());
-		
-//		BnBNode n = new BnBNode(null,null,false);
-//		n = new BnBNode(n,new Edge(7,10), false);
-//		n = new BnBNode(n,new Edge(2,3), true);
-//		n = new BnBNode(n,new Edge(4,5), true);
-//		n = new BnBNode(n,new Edge(3,4), false);
-//		n = new BnBNode(n,new Edge(1,8), false);
-//		visualizeMST(g,n);
-		
+		Graph g = new Instance1();
+
+//		visualizeSolution(g, new BranchAndBound_TSP(g).solve());
+
+		BnBNode n = new BnBNode(null,null,false);
+        //		n = new BnBNode(n,new Edge(7,10), false);
+		n = new BnBNode(n,new Edge(2,3), true);
+		n = new BnBNode(n,new Edge(4,5), true);
+		n = new BnBNode(n,new Edge(3,4), false);
+		n = new BnBNode(n,new Edge(1,8), false);
+		visualizeMST(g,n);
+
 	}
-	
+
 	public static void visualizeSolution(Graph g, BnBNode n){
 		J2DScene scene = J2DScene.createJ2DSceneInFrame();
 		for(Edge e: g.edges){
 			scene.addShape(new LineSegment(new Point(g.vertexCoords[e.u]), new Point(g.vertexCoords[e.v])), new Color(180,180,180));
-			
+
 		}
 		while(n.parent!=null) {
 			if(n.edgeIncluded){
@@ -48,8 +48,8 @@ public class Visualization {
 			scene.addShape(new TextShape(""+(i++), new Point(coords), 0.1), Color.BLACK);
 		}
 	}
-	
-	
+
+
 	public static void visualizeMST(Graph g, BnBNode n){
 		List<Edge> edges = new Kruskal().minimumSpanningTree(g, n);
 

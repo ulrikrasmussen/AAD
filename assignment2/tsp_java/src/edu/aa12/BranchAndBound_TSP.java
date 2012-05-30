@@ -1,7 +1,9 @@
 package edu.aa12;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.PriorityQueue;
+import java.util.Random;
 
 import edu.aa12.DisjointSet.DSNode;
 
@@ -20,13 +22,18 @@ public class BranchAndBound_TSP {
 		graph = g;
 	}
 
+    // Default edge sort does nothing
+    protected Comparator<Edge> getSortComparator() {
+        return new Comparator<Edge>(){
+			public int compare(Edge arg0, Edge arg1) {
+                return 0;
+			}};
+    }
+
 	/** Find the shortest tour visiting all nodes exactly once and return the result as a BnBNode. */
 	public BnBNode solve() throws Exception {
 		//Sorting edges by length might or might not help
-//		Collections.sort(graph.edges, new Comparator<Edge>(){
-//			public int compare(Edge arg0, Edge arg1) {
-//				return -Double.compare(graph.getLength(arg0),graph.getLength(arg1));
-//			}});
+		Collections.sort(graph.edges, this.getSortComparator());
 
 		//The ordering in the nodePool determines which nodes gets polled first.
 		PriorityQueue<BnBNode> nodePool = new PriorityQueue<BnBNode>(10000,	new Comparator<BnBNode>(){
