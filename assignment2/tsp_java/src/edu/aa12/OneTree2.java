@@ -6,12 +6,16 @@ package edu.aa12;
 public class OneTree2 {
 
   public static void main(String[] args) throws Exception {
-    Graph g = new Instance3();
-
-    long start = System.nanoTime();
-    BnBNode n = new OneTreeBNB2(g).solve();
-    long end = System.nanoTime();
-    System.out.printf("Took %.2fms\n",(end-start)/1000000.0);
-    Visualization.visualizeSolution(g, n);
+    solveGraph(new Instance1());
+    solveGraph(new Instance2());
+    solveGraph(new Instance3());
   }
+
+    public static void solveGraph(Graph g) throws Exception {
+      long start = System.nanoTime();
+      BnBNode n = new OneTreeBNB2(g).solve();
+      long end = System.nanoTime();
+      System.out.printf("Took %.2fms\n",(end-start)/1000000.0);
+      Visualization.visualizeSolution(g, n);
+    }
 }
