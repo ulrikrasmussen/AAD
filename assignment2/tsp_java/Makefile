@@ -23,7 +23,9 @@ CLASSES = \
 		src/edu/aa12/OneTreeBNB2.java \
 		src/edu/aa12/Relax.java \
 		src/edu/aa12/RelaxBNB.java \
-		src/edu/aa12/Visualization.java
+		src/edu/aa12/Visualization.java \
+		src/edu/aa12/Radius.java \
+		src/edu/aa12/RadiusBNB.java
 
 default: classes
 
@@ -37,6 +39,9 @@ onetree: classes
 
 onetree2: classes
 	java -ea -cp $(CLASSPATH) edu.aa12.OneTree2
+
+radius: classes
+	LD_LIBRARY_PATH=. java -cp $(CLASSPATH) -Djava.library.path=. edu.aa12.Radius
 
 relax: classes
 	LD_LIBRARY_PATH=. java -cp $(CLASSPATH) -Djava.library.path=. edu.aa12.Relax
