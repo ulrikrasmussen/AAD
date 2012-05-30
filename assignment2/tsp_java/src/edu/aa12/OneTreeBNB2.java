@@ -51,8 +51,7 @@ public class OneTreeBNB2 extends BranchAndBound_TSP {
                 maxCompIndex = i;
         }
 
-        // Select a random vertex v1
-        //DSNode v1 = ds.find(nodes[new Random().nextInt(graph.getVertices())]);
+        // Select vertex from largest component
         DSNode v1 = ds.find(nodes[maxCompIndex]);
 
         // Filter out all edges that are not incident to the connected
@@ -63,6 +62,17 @@ public class OneTreeBNB2 extends BranchAndBound_TSP {
             if (!u_in_c && !v_in_c   // edge is outside component
                 || u_in_c && v_in_c) // edge is inside component
                 incidentEdges.remove(e);
+        }
+
+        // If the selected component has less than two incident edges,
+        //   and we have not yet selected |V|-1 edges, then there is
+        //   no possible way to construct a valid TSP solution (since
+        //   we need at least two edges to form a cycle, one for going
+        //   into the component, and one for leaving it again)
+        if (incidentEdges.size() < 2
+              && node.edgesDefined != graph.getVertices() - 1) {
+            // mark solution space as infeasible
+            return Double.POSITIVE_INFINITY;
         }
 
         // Make a copy of the graph, and remove all edges incident to
@@ -76,6 +86,7 @@ public class OneTreeBNB2 extends BranchAndBound_TSP {
         List<Edge> mstEdges = this.kruskal.minimumSpanningTree(workingG,node);
         for (Edge e : mstEdges) {
             sum += workingG.getLength(e);
+            ds.union(nodes[e.u], nodes[e.v]);
         }
 
         // Sort incident edges in ascending order
@@ -86,18 +97,27 @@ public class OneTreeBNB2 extends BranchAndBound_TSP {
                                           ,graph.getDistance(o2.u, o2.v));
                 }});
 
-        // When |V|-1 edges have been defined, there are no edges
-        //   incident to the selected component. The MST is also empty.
-        //   In all other cases, the branch algorithm will ensure that
-        //   there are at least two edges incident to the component.
-        if (node.edgesDefined != graph.getVertices() - 1) {
-            sum += graph.getLength(incidentEdges.get(0));
-            sum += graph.getLength(incidentEdges.get(1));
-        } else {
-            // assert that the above comment is true
-            assert (incidentEdges.size() == 0)
-                : "incident edge count is non-zero : " + incidentEdges.size();
-            assert (mstEdges.size() == 0);
+        if (incidentEdges.size() > 0) {
+            Edge e = incidentEdges.get(0);
+            sum += graph.getLength(e);
+            ds.union(nodes[e.u], nodes[e.v]);
+        }
+        if (incidentEdges.size() > 1) {
+            Edge e = incidentEdges.get(1);
+            sum += graph.getLength(e);
+            ds.union(nodes[e.u], nodes[e.v]);
+        }
+
+        // Check that adding two incident edges of the selected
+        //   component to the MST forms a connected component of all
+        //   nodes. If not, then surely there is no way to ever form a
+        //   valid TSP solution.
+        DSNode rep = ds.find(nodes[0]); // representative node for connected component
+        int counter = 0;
+        for (int i = 1; i < graph.getVertices(); i++) {
+            if (ds.find(nodes[i]) != rep) {
+                return Double.POSITIVE_INFINITY;
+            }
         }
 
         return objectiveValue(node) + sum;
