@@ -33,7 +33,7 @@ run: classes
 	java -cp $(CLASSPATH) edu.aa12.MainMethods
 
 onetree: classes
-	java -cp $(CLASSPATH) edu.aa12.OneTree
+	LD_LIBRARY_PATH=. java -cp $(CLASSPATH) -Djava.library.path=. edu.aa12.OneTree
 
 radius: classes
 	LD_LIBRARY_PATH=. java -cp $(CLASSPATH) -Djava.library.path=. edu.aa12.Radius
