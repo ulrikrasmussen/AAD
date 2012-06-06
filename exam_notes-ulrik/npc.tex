@@ -1,3 +1,7 @@
+\newcommand{\NP}{\mathop{\text{NP}}}
+\newcommand{\CNP}{\mathop{\text{co-NP}}}
+\renewcommand{\P}{\mathop{\text{P}}}
+
 \subsection{Problem examples}
 The following problems are NP-complete:
 \begin{itemize}
@@ -52,9 +56,65 @@ The following problems are NP-complete:
 \end{itemize}
 
 
-\subsection{}
+\subsection{Polynomial time verification}
 
-%%% Local Variables: 
+\begin{itemize}
+\item We call a two-argument algorithm $A$ with ordinary input $x$ and
+  binary input $y$ a \emph{verification algorithm}. We say that $A$
+  \emph{verifies} an input string $x$ if there is a certificate $y$
+  such that $A(x,y) = 1$. The \emph{language verified} by $A$ is
+$$
+ L = \{ x \in \{0,1\}^\star : \exists y \in \{0,1\}^\star . A(x,y) = 1 \}.
+$$
+\end{itemize}
+
+
+\subsection{The class NP}
+
+\begin{itemize}
+\item For a language $L$, we have $L \in \NP$ iff there exists a
+  polynomial time algorithm $A$ that verified $L$. In other words,
+  there is an algorithm $A$ and a constant $c$ such that
+$$
+ L = \{ x \in \{0,1\}^\star : \exists y \in \{0,1\}^\star . |y| = O(|x|^c) \land A(x,y)=1 \}
+$$
+\item It is unknown whether $\P=\NP$.
+\item The class co-NP is the languages whose complement belong to NP.
+\item Likewise, it is unknown whether $\NP = \CNP$.
+
+\end{itemize}
+
+\subsection{Reducibility}
+\begin{itemize}
+\item A language $L_1$ is \emph{polynomial-time} reducible to $L_2$,
+  or $L_1 \leq_p L_2$ iff there exists a polynomial-time computable
+  function $f$ such that $x \in L_1 \iff f(x) \in L_2$.
+\item It is easy to show that if $L_1 \leq_p L_2$ and $L_2 \in \P$,
+  then $L_1 \in \P$.
+\item $L$ is NPC iff $L \in \NP$ and $L' \leq_p L$ for any $L' \in
+  \NP$.
+\end{itemize}
+
+\subsubsection{Circuit satisfiability}
+\begin{itemize}
+\item A \emph{boolean combinational circuit} consists of one or more
+  logical gates (and, or, not) interconnected by wires. A set of wires
+  are denoted as \emph{input wires} and another set as \emph{output
+    wires}.
+\item The language CIRCUIT-SAT contains the encodings of all circuits
+  that are satisfiable, i.e. for which there exists some configuration
+  of inputs which produces a positive output.
+\item Every problem in NP reduces to CIRCUIT-SAT, as we can simply
+  model a computer using circuits. We can only model the computer
+  doing a finite number of steps, but since there is a polynomial
+  verifier for any problem in NP, we have an upper bound on the number
+  of steps we have to simulate.
+\end{itemize}
+
+\subsection{NPC proofs}
+\todo{Exercise proofs from section 34.4}
+
+%%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "notes"
-%%% End: 
+%%% End:
