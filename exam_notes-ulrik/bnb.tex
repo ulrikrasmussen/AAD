@@ -1,0 +1,86 @@
+\begin{itemize}
+\item For an NP-complete problem, we (supposedly) cannot find a
+  polynomial algorithm for solving it.
+\item Instead, we can try to brute force search the complete solution
+  space, which is infeasible for all but the smallest problem
+  instances. A more intelligent variant of brute-force is the
+  \emph{branch-and-bound} method, which is a scheme for reducing the
+  solution space.
+\item Branch and bound gives no guarantees on the running time - it is
+  still exponential in the worst case. However, we may get ``lucky''
+  and be able to prune away very large subsets of the potential
+  solution space.
+\item Definition: For a given minimization problem with solution space
+  $S$, assume we are given
+  \begin{itemize}
+  \item a method $\textsc{Branch}(S)$ which splits $S$ into some
+    number of strictly smaller subsets,
+  \item $f(s)$ which calculates the cost of some solution $s \in S$,
+    and
+  \item $lowerBound(S')$ which for some $S' \subseteq S$ computes a
+    number $k$ such that $\forall s' \in S'. k \leq f(s')$.
+  \end{itemize}
+  \begin{algorithm}
+    \caption{Branch and bound minimization scheme}
+    \begin{algorithmic}[1]
+      \Procedure{Branch-And-Bound-Min}{$S$}
+        \State $Q = \{S\}$
+        \State $best = \textsc{Nil}$
+        \While{$Q \not= \emptyset$}
+          \State Pick some $S_i \in Q$
+          \If{$S_i = \{s\}$}
+            \If{$best = \textsc{Nil} \lor f(s) < f(best)$}
+              \State $best = s$
+            \EndIf
+          \Else
+            \If{$lowerBound(S_i) < f(best)$}
+              \State $Q = Q \cup \textsc{Branch}(S_i)$
+            \EndIf
+          \EndIf
+        \EndWhile
+        \Return $best$
+      \EndProcedure
+    \end{algorithmic}
+  \end{algorithm}
+\item Queue-popping strategy is usually \emph{best-first}, i.e. the
+  subset $S_i$ which minimizes $lowerBound(S_i)$.
+\item Example: TSP. Let $f(s)$ denote the length of a tour $s$, and
+  let $\textsc{Branch}(S)$ split $S$ into two sets $S_1, S_2$ where
+  some edge is included in all solutions in $S_1$ and exlcluded in all
+  solutions in $S_2$.
+\item $lowerBound(S')$ for TSP can be tricky. Several options:
+  \begin{itemize}
+  \item 1-tree. Pick some vertex $\mathbf{1} \in V$, and compute the
+    MST over $V - \{ \mathbf{1} \}$. Then add $\mathbf{1}$ to the MST
+    using the two minimal adjacent edges.
+
+    This is a lower bound, as any hamiltonian tour with one edge
+    removed will produce a spanning tree. Therefore, the MST plus the
+    two minimal edges that will form a cycle is a lower bound for TSP.
+  \item Linear program relaxation. For instance, pick the following
+    mixed integer LP:
+    \begin{align*}
+      &\text{minimize} & \sum_{i \in V} \sum_{j \in V} d_{ij} x_{ij} \\
+      &\text{subject to} & \sum_{i \in V} x_{ij} + \sum_{i \in V} x_{ji} ={}& 2 & \forall i \in V \\
+      &                  & u_i - u_j + |V| \cdot x_{ij} \leq{}& |V| - 1 & \forall i,j \in V \\
+      &                  & u_i \geq{}& 0 & \forall i \in V \\
+      &                  & x_{ij} \in{}& \{0,1\} & \forall i,j \in V
+    \end{align*}
+    Simply relax by allowing $x_{ij}$ to take on any real value, then
+    solve using simplex or similar
+  \item Zones (with moats). Maximize radii of set of circles
+    distributed over all vertices in the graph (formulate as
+    LP). Using the fixed decision variables, form clusters of circles,
+    and grow extra ``moats'' from these, such that they do not overlap
+    with other circles or moats.
+
+    In any tour, we must enter and exit each circle and
+    moat. Therefore, a lower bound is two times the sum of all the
+    radii and moat widths.
+  \end{itemize}
+\end{itemize}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "notes"
+%%% End:

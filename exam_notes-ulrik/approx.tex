@@ -1,0 +1,218 @@
+\subsection{Introduction and performance ratios}
+\begin{itemize}
+\item Even though a problem is NP-complete, we might be apple to get
+  an \emph{approximate} solution that approaches the optimal one.
+\item An algorithm that returns such near-optimal solutions are called
+  \emph{approximation algorithms}.
+\item If an algorithm produces an approximation of cost $C$ for an
+  input of size $n$, we say that it has an \emph{approximation ratio}
+  of $\rho(n)$ with regards to the cost $C^\star$ of the optimal
+  solution, if
+$$
+ \max\left(\frac{C}{C^\star}, \frac{C^\star}{C}\right) \leq \rho(n).
+$$
+\item An algorithm having an approximation ratio of $\rho(n)$ is a
+  \emph{$\rho(n)$-approximation algorithm}.
+\item An \emph{approximation scheme} takes both the input for the
+  algorithm as well as a value $\epsilon >0$ such that for some fixed
+  $\epsilon$, the scheme is a $(1+\epsilon)$-approximation
+  algorithm. A \emph{polynomial-time approximation scheme} is such a
+  scheme that runs in poly time in $n$ for any $\epsilon$.
+\item A \emph{fully polynomial-time approximation scheme} runs in
+  polynomial time in both the input size $n$ and $\epsilon$.
+\end{itemize}
+
+\subsection{Vertex-cover}
+\begin{itemize}
+\item A VC of a graph $G$ is a subset $V' \subseteq V$ s.t. $\forall
+  (u,v) \in E. u \in V' \lor v \in V'$.
+\begin{algorithm}
+\caption{The approx-vertex-cover algorithm}
+\begin{algorithmic}[1]
+\Procedure{Approx-Vertex-Cover}{$G$}
+  \State $C = \emptyset$
+  \State $E' = G.E$
+  \While{$E' \not= \emptyset$}
+    \State pick some $(u,v) \in E'$
+    \State $C = C \cup \{u,v\}$
+    \State remove from $E'$ all edges incident on either $u$ or $v$
+  \EndWhile
+  \State \Return $C$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+\item The above algorithm is a poly-time $2$-approximation algorithm
+  for vertex cover.
+\begin{proof}
+  Let $A$ denote the set of edges chosen by random. No two edges in
+  $A$ can share an endpoint, as all incident edges to the endpoints of
+  a chosen edge is removed. The optimal solution $C^\star$ must
+  contain at least one vertex that is an endpoint for each edge in
+  $A$. Therefore, $$|C^\star| \geq |A|.$$
+
+  Again, since no endpoints are shared between edges in $A$, and
+  because exactly two vertices are added to $C$ in each
+  iteration, $$|C| = 2|A| \leq 2|C^\star|.$$
+\end{proof}
+\end{itemize}
+
+\subsection{The traveling-salesman problem}
+
+\begin{itemize}
+\item For some subset $A \subseteq E$, define $c(A) = \sum_{(u,v) \in A} c(u,v)$.
+\item Define the traveling salesman problem with triangle inequality
+  as the general TSP, but where for any vertices $u,v,w$, we have
+  $c(u,w) \leq c(u,v) + c(v,w)$.
+\item A poly-time 2-approximation algorithm for metric TSP consists of
+  computing the MST from any root $r \in V$, and then returning the
+  vertices of the MST in the order they are visited in a preorder tree
+  walk from $r$. Call this sequence $H$.
+\item The algorithm described above can easily be proven to be a
+  2-approximation algorithm:
+  \begin{proof}
+    Call the optimal tour $H^\star$. This is a hamiltonian cycle, so
+    deleting any edge in $H^\star$ results in a spanning tree. Hence,
+    the minimum spanning tree $T$ must be a lower bound for
+    $H^\star$: $$c(T) \leq c(H^\star)$$.
+
+    If we perform a full walk $W$ of $T$, we will traverse every edge
+    twice, and hence $$c(W) \leq 2c(H^\star)$$. By deleting every node
+    that we have already visited in $W$, we obtain a cycle $H$, since
+    every node will occur exactly once. This also corresponds to the
+    preorder walk that the algorithm performs.
+
+    Since our problem satisfies the triangle inequality, we will have
+    $c(H) \leq c(W)$, and hence $$c(H) \leq 2c(H^\star)$$.
+  \end{proof}
+\end{itemize}
+
+\subsection{The general traveling salesman problem}
+
+We cannot approximate the general traveling salesman problem by any
+factor $\rho$ unless $\P=\NP$.
+\begin{proof}
+  Assume we have a poly-time $\rho$-approximation algorithm $A$ for
+  the general TSP, and assume that $\rho$ is integral. Let $G=(V,E)$
+  be an instance of the hamiltonian cycle problem. We define a
+  complete graph $G'=(V,E')$, i.e. $E' = \{(u,v) : u,v \in V \land u
+  \not= v\}$. We define a cost function as well, as
+  $$c(u,v) = \left\{\begin{array}{l l}
+      1 & \text{if $(u,v) \in E$}, \\
+      \rho |V| + 1 & \text{otherwise}.
+    \end{array}\right.
+  $$
+
+  If there is a hamiltonian tour in $G$, then there is an optimal TSP
+  solution of cost $|V|$. On the other hand, if a TSP solution uses at
+  least one edge that is not in $G$, then that cost of a tour $T$ is
+  at least
+  $$
+    c(T) = (|V| - 1) + \rho|V| + 1 = \rho|V| + |V| > \rho|V|,
+  $$
+  i.e. the cost of $T$ is at least a factor of $\rho + 1$ more costly
+  than the optimal solution. As we assumed that $A$ was a polynomial
+  time $\rho$-approximation for TSP, then iff there is a hamiltonian
+  cycle in $G$, $A$ will find a solution of cost $|V|$. Hence, we can
+  use $A$ to decide \textsc{Ham-Cycle} in polynomial time, implying
+  $\P = \NP$ (as \textsc{Ham-Cycle} is NP-complete).
+\end{proof}
+
+\subsection{Set-cover}
+
+\begin{itemize}
+\item Given is a family $\mathcal{F}$ of subsets of $X = \bigcup_{S
+    \in \mathcal{F}} S$.
+\item \textsc{Set-Cover} is the problem of finding a minimum size
+  family $\mathcal{C} \subseteq \mathcal{F}$ where $\bigcup_{S \in
+    \mathcal{C}} S = X$.
+\begin{algorithm}
+\caption{The greedy-set-cover algorithm}
+\begin{algorithmic}[1]
+\Procedure{Greedy-Set-Cover}{$\mathcal{F}$, $X$}
+  \State $\mathcal{C} = \emptyset$
+  \State $U = X$
+  \While{$U \not= \emptyset$}
+    \State Pick $S \in \mathcal{F}$ that maximizes $|S \cap U|$
+    \State $U = U - S$
+    \State $\mathcal{C} = \mathcal{C} \cup \{S\}$
+  \EndWhile
+  \State \Return $\mathcal{C}$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+\item \textsc{Greedy-Set-Cover} is a polynomial time
+  $\rho(n)$-approximate algorithm for \textsc{Set-Cover}, with
+  $\rho(n) = H(n)$, where $H(d) = \sum_{i=1}^d \frac{1}{i}$ and $n =
+  \max \{|S| : S \in \mathcal{F} \}$.
+  \begin{proof}
+    \todo{exercise proof}
+  \end{proof}
+\end{itemize}
+
+\subsection{Subset-sum}
+
+\begin{itemize}
+\item Given is a pair $(S,t)$ where $S$ is a set of integers, and $t$
+  is an integral target value. Finding a subset $S' \subseteq S$ for
+  which $\sum_{n\in S'} n = t$ is NP-complete.
+\item We can, however, approximate the corresponding approximation
+  problem, which consists of finding a subset $S'$ for which the sum
+  is maximized while being \emph{no larger} than $t$.
+\begin{algorithm}
+\caption{The exact subset-sum algorithm}
+\begin{algorithmic}[1]
+\Procedure{Exact-Subset-Sum}{$S$, $t$}
+  \State $n = |S|$
+  \State $L_0 = \langle 0 \rangle$
+  \For{$i = 1 \To n$}
+    \State $L_i = \textsc{Merge-Lists}(L_{i-1}, L_{i-1} + x_i)$
+    \State Prune from $L_i$ every element greater than than $t$
+  \EndFor
+  \State \Return $\max L_n$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+\item By simple induction, it follows that $L_i$ contains all possible
+  sums of the elements $x_1, x_2, ..., x_i$ not greater than $t$.
+\item The above is an exact algorithm, running in exponential time,
+  since $L_i$ can be up to size $2^i$.
+\item We can devise a fully polynomial approximation scheme by
+  ``trimming'' the lists $L_i$ after they are created.
+\item Using a trimming parameter $\delta$, we \emph{trim} a list $L$
+  by removing as many elements as possible. For each element $y$
+  removed, there must be a $z$ in $L'$ such that $$\frac{y}{1+\delta}
+  \leq z \leq y.$$
+\item Assuming $L$ is sorted, a linear time algorithm
+  $\textsc{Trim}(L,\delta)$ simply scans through $L$, ignoring
+  elements that are not at least a factor of $(1+\delta)$ larger than
+  the last non-ignored element.
+\item We can devise a polynomial time approximation scheme that
+  approximates a solution given a tuple $(S,t,\epsilon)$ where $1 <
+  \epsilon < 1$. The result is a value $z$ that is within a factor of
+  $1+\epsilon$ of the optimal solution.
+\begin{algorithm}
+\caption{Appriximate subset-sum}
+\begin{algorithmic}[1]
+\Procedure{Approx-Subset-Sum}{$S$, $t$, $\epsilon$}
+  \State $n = |S|$
+  \State $L_0 = \langle 0 \rangle$
+  \For{$i = 1 \To n$}
+    \State $L_i = \textsc{Merge-Lists}(L_{i-1}, L_{i-1} + x_i)$
+    \State $L_i = \textsc{Trim}(L_i, \epsilon / 2n)$
+    \State Prune from $L_i$ every element greater than than $t$
+  \EndFor
+  \State \Return $\max L_n$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+\item The above algorithm is a FPAS for \textsc{Subset-Sum}
+\begin{proof}
+  \todo{Exercise proof}
+\end{proof}
+\end{itemize}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "notes"
+%%% End:
