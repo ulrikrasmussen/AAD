@@ -1,0 +1,190 @@
+\newcommand{\T}{\mathcal{T}}
+\newcommand{\V}{\mathcal{V}}
+\newcommand{\D}{\mathcal{V}}
+\newcommand{\DG}{\mathcal{DG}}
+\newcommand{\DT}{\mathcal{DT}}
+\renewcommand{\S}{\mathcal{S}}
+\newcommand{\Vor}{\mathrm{Vor}}
+
+\begin{itemize}
+\item Given a set $P \subset \mathcal{R}^2$ of points with
+  measurements $f : P \rightarrow \mathcal{R}$, we may want to predict
+  measurements at points not in $P$, based on $P$ and $f$.
+\item Predicting based only on the nearest point gives an unnatural
+  discrete approximation.
+\item A better way is to determine a \emph{trianglulation} of $P$, and
+  then predict the value of a given point $p$ by interpolating between
+  the measurements at the three points that defines the triangle that
+  $p$ lies within.
+\item How do we determine the quality of a triangulation? Some
+  triangulations look more natural than others.
+\item It seems that triangles with small angles are bad. We rank
+  triangulations by comparing their smallest angle.
+\end{itemize}
+
+\subsection{Triangulation of planar point sets}
+\begin{itemize}
+\item For a point set $P$, define a \emph{maximal planar subdivision}
+  of $P$ as a set of edges $\mathcal{S}$ such that no edge connecting
+  to vertices in $P$ can be added to $\mathcal{S}$ without destroying
+  its planarity. I.e. any edge not in $\mathcal{S}$ intersects with
+  some edge in $\mathcal{S}$.
+\item A \emph{triangulation} $\mathcal{T}$ of $P$ is the maximal
+  planar subdivision of $P$. Does such a division always consist of
+  triangles? Yes, a bounded face is a polygon, and every polygon can
+  be subdivided into triangles.
+\item The number of triangles in a triangulation is $2n - 2 - k$,
+  where $k$ is the number of points on the convex hull boundary, and
+  $n$ is the number of points. The number of edges is $3n - 3 - k$.
+\item We define the \emph{angle vector} $A(\T)$ of a triangulation
+  $\T$ with $m$ triangles as a set of angles $\alpha_1, ...,
+  \alpha_{3m}$. We say that $A(\T) > A(\T')$ when $\alpha_i =
+  \alpha_i'$ for all $i < j$ and $\alpha_j > \alpha_j'$.
+\item When $A(\T) \geq A(\T')$ for all triangulations $\T'$ of $P$, we
+  say that $\T$ is \emph{angle-optimal}.
+\item \emph{Thale's theorem} gives important inequalities (and
+  equalities) about the smallest angle in triangles $p_ip_jp_k$ whose
+  third point $p_k$ lies either inside, on, or outside the
+  circumference of a circle with $p_i$ and $p_j$ on its circumference.
+\item If edge $e = \overline{p_ip_j}$ is not an edge of the unbounded
+  face, but incident to triangles $p_ip_jp_k$ and $p_ip_jp_l$ forming
+  a convex quadrilateral, we can \emph{flip} $e$ by replacing it with
+  $\overline{p_kp_k}$. This destroys the six angles
+  $\alpha_1,...,\alpha_6$ and replaces them with
+  $\alpha_1',...,\alpha_6'$.
+\item We say than an edge $\overline{p_ip_j}$ is \emph{illegal} if
+  $\min_{1 \leq i \leq 6} \alpha_i < \min_{1 \leq i \leq 6}
+  \alpha_i'$.
+\item Flipping an illegal edge in $\T$ results in a new triangulation
+  $\T'$ with $A(\T') > A(\T)$.
+\item We don't have to compute the angles to determine if an edge is
+  illegal. Edge $\overline{p_ip_j}$ in triangles $p_ip_jp_k$,
+  $p_ip_jp_l$ is illegal iff circle $C$ with $p_i,p_j,p_k$ on its
+  circumference contains $p_l$.
+\item A simple algorithm, \textsc{LegalTriangulation} transforms some
+  triangulation $\T$ into a legal one by flipping illegal edges until
+  all edges are legal. It terminates, as it is guaranteed to increase
+  the angle value in each step. It is, however, inefficient.
+\end{itemize}
+
+\subsection{Delaunay triangulation}
+\begin{itemize}
+\item Given a set $P$ of $n$ $\emph{sites}$ in the plane, we can
+  subdivide the plane into $n$ regions, one for each $p \in P$, such
+  that for each region, every point in the region is closer to $p$
+  than to any other site in $P$.
+\item This is called the \emph{Voronoi diagram} for $P$, denoted
+  $\Vor(P)$. Each cell is denoted $\V(p)$.
+\item By connecting sites $p_ip_j$ by an edge whenever their Voronoi
+  cells share a boundary, we obtain the \emph{Delaunay graph} for $P$,
+  denoted $\DG(P)$.
+\item $\DG(P)$ is \emph{planar}: No two edges cross.
+\item $\DG(P)$ \emph{may} be a triangulation for $P$. In most cases it
+  is, unless we have degenerate cases such as multiple sites lying on
+  a common circle. A \emph{Delaunay triangulation} is obtained by
+  adding missing edges to $\DG(P)$, since such cases always results in
+  convex polygons.
+\item From the properties of Voronoi diagrams, we have that all edges
+  in a Delaunay triangulation are legal. Constructive proof: Since
+  every Voronoi vertex is the center of a circle with exactly three
+  sites on its circumference.
+\item This also implies: Two points $p_i, p_j$ form an edge of iff
+  there is a closed disc $C$ that has $p_i$ and $p_j$ on its boundary,
+  and contains no other points in $P$.
+\item A triangulation $\T$ is legal iff it is a $\DT(P)$.
+\begin{proof}
+  It follows trivially that any Delaunay triangulation is legal.
+  \todo{Exercise other direction. See page 198.}
+\end{proof}
+
+\item All in all, we have that any Delaunay triangulation of $P$
+  maximizes the minimum angle over all triangulations of $P$. (But
+  they may not be angle optimal).
+\end{itemize}
+
+\subsection{Algorithm}
+
+\begin{itemize}
+\item There is an efficient way to compute the Delaunay triangulation
+  directly, using an incremental algorithm.
+\item We need to start with a valid triangulation. To do this, we add
+  sites $p_{-1}, p_{-2}$, which together with the rightmost highest
+  point $p_0$ forms a triangle ``large enough'' to contain all sites
+  in $P$.
+\begin{algorithm}
+\caption{Delaunay Triangulation}
+\begin{algorithmic}[1]
+\Procedure{Delaunay-Triangulation}{$P$}
+
+  \State Let $p_0$ be the highest rightmost point.
+  \State Add points $p_{-1}, p_{-2}$, forming a triangle ``large
+    enough'' to contain all sites in $P$.
+  \State Let $\T$ be the triangulation with only $p_0p_{-1}p_{-2}$.
+  \For{$r \leftarrow 1 \To n$}
+    Find a triangle $t = p_ip_jp_k$ containing $p_r$.
+    \If{$p_r$ lies on the interior of $t$}
+      \State Add edges from $p_r$ to $p_i, p_j, p_k$, splitting $t$ into three triangles.
+      \State \textsc{LegalizeEdge}$(p_r, \overline{p_ip_j}, \T)$
+      \State \textsc{LegalizeEdge}$(p_r, \overline{p_jp_k}, \T)$
+      \State \textsc{LegalizeEdge}$(p_r, \overline{p_kp_i}, \T)$
+    \Else
+      \Comment $p_r$ is on an edge of $t$, say $\overline{p_ip_j}$.
+      \State Add edges to $p_k$ and to $p_l$, which is assumed to be in the other triangle for the edge $\overline{p_ip_j}$.
+      \State \textsc{LegalizeEdge}$(p_r, \overline{p_ip_l}, \T)$
+      \State \textsc{LegalizeEdge}$(p_r, \overline{p_lp_j}, \T)$
+      \State \textsc{LegalizeEdge}$(p_r, \overline{p_jp_k}, \T)$
+      \State \textsc{LegalizeEdge}$(p_r, \overline{p_kp_i}, \T)$
+    \EndIf
+  \EndFor
+
+  \Return $\T$ with $p_{-1}, p_{-2}$ removed
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\item Adding new edges may make the triangulation illegal. We
+  therefore flip edges until it is legal again.
+
+  \begin{algorithm}
+    \caption{Edge legalization}
+    \begin{algorithmic}[1]
+      \Procedure{Legalize-Edge}{$p_r, \overline{p_ip_j}, \T$}
+        \If{$\overline{p_ip_j}$ is illegal}
+          \State Remove $\overline{p_ip_j}$ from $\T$, and add $\overline{p_rp_k}$ instead.
+          \State \textsc{LegalizeEdge}$(p_r, \overline{p_ip_k}, \T)$
+          \State \textsc{LegalizeEdge}$(p_r, \overline{p_jp_k}, \T)$
+        \EndIf
+      \EndProcedure
+    \end{algorithmic}
+  \end{algorithm}
+
+\item Any added edge is legal, and incident to the newly added point $p_r$.
+  \begin{proof}
+    Consider any point $p_r$ added to a triangulation $\T$, inside a
+    triangle $p_ip_jp_k$. Before we added it, we could draw a circle
+    $C$ with $p_i,p_j,p_k$ on its circumference, and no other points
+    inside. Hence, we can ``contract'' $C$, creating a new circle $C'$
+    with $p_i$ and $p_k$ on its circumference, and no other points
+    inside. Hence, the edge $\overline{p_ip_k}$ is legal, and
+    analogously for the two other edges.
+
+    When flipping an edge, it will always end up being incident to
+    $p_r$, and by the same logic as above, it will again become legal.
+  \end{proof}
+
+\item How do we find the triangle that the new point $p_r$ resides in?
+  We maintain a directed acyclic graph $\D$ of triangles, which
+  initially just contains $p_0p_{-1}p_{-2}$.
+
+\item All leafs correspond to actual triangles in the current
+  triangulation. When we split a triangle, we add pointers to each of
+  the sub-triangles (max 3).
+
+\item Expected running time is $O(n \log n)$. Expected storage is
+  $O(n)$.
+\end{itemize}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "notes"
+%%% End:

@@ -1,0 +1,111 @@
+% 5-1, 5-2, 5-3, 7.3, 9.2, 12.4, 35.4 (randomization) with a short
+% overview of Chapter 7, without the details of the probabilistic
+% analysis of Sections 9.2, 12.4 and of Chapter 7.
+
+\subsection{Disposition}
+\begin{itemize}
+\item Explain basic idea, i.e. the use of probabilistic analysis to
+  ensure a good expected running time.
+\item Randomized quicksort
+\item Randomly built binary search trees
+\item Randomized 3-CNF approximation
+%\item Randomized select
+%\item In-place randomization
+\end{itemize}
+
+\subsection{Introduction}
+\begin{itemize}
+\item By making some assumptions about the distribution of our input,
+  we can compute the average expected running time of an
+  algorithm. This can sometimes provide a better upper bound on the
+  \emph{average expected} running time.
+\item We can rarely give any guarantees on the distribution of our
+  input. Therefore, randomized algorithms use pseudo-random number
+  generators to e.g. randomly permute a list of inputs, or to draw
+  random samples from some distribution.
+\item Hence, we can use probabilistic analysis with our new guarantees
+  to derive an upper bound on the average expected running time,
+  \emph{independent of the input}.
+\end{itemize}
+
+\subsection{Randomized quicksort}
+\begin{itemize}
+\item If we make no assumptions on the input to the deterministic
+  quicksort algorithm, the average running time will be $O(n^2)$ - we
+  could be so unlucky that the worst case running time occurs every
+  time.
+\item Instead, we can use \emph{randomized quicksort}, where the pivot
+  element is chosen randomly with equal probabilities among the
+  elements of the current partition.
+\item Since each pair of elements can \emph{at most} be compared once
+  (since we remove the pivot element from the two partitions), the
+  number of total comparisons will be
+$$
+ X = \sum_{i=1}^{n-1} \sum_{j=i+1}^n X_{ij},
+$$
+where $X_{ij}$ is a stochastic variable with $x_{ij} = 1$ if elements
+$z_i,z_j$ were compared, and $x_{ij} = 0$ otherwise.
+
+\item Using linearity of expectations, the expected number of
+  comparisons $E[X]$ is therefore
+$$
+ E[X] = \sum_{i=1}^{n-1} \sum_{j=i+1}^n E[X] = \sum_{i=1}^{n-1} \sum_{j=i+1}^n Pr \{\text{$z_i$ is compared to $z_j$}\}.
+$$
+
+\item We observe that for some partition $Z_{ij}$ of elements from
+  $z_i$ to $z_j$, $z_i$ will only be compared to $z_j$ if $z_i$ was
+  chosen as pivot, or if $z_j$ was chosen as pivot. Since there are $j
+  - i + 1$ elements in $Z_{ij}$, we therefore have
+$$
+  E[X_{ij}] = Pr\{\text{$z_i$ pivot}\} + Pr\{\text{$z_j$ pivot}\} = 2 \cdot \frac{1}{j-i+1}
+$$
+
+\item Hence,
+\begin{align*}
+ E[X] ={}& \sum_{i=1}^{n-1} \sum_{j=i+1}^n \frac{2}{j-i+1} \\
+      ={}& \sum_{i=1}^{n-1} \sum_{k=1}^{n-i} \frac{2}{k+1} \\
+      <{}& \sum_{i=1}^{n-1} \sum_{k=1}^n \frac{2}{k} \\
+      ={}& \sum_{i=1}^{n-1} O(\lg n) \\
+      ={}& O(n \lg n).
+\end{align*}
+\end{itemize}
+
+
+\subsection{Randomized 3-CNF approximation}
+
+\begin{itemize}
+\item We can develop a randomzed $8/7$-approximation algorithm to
+  approximate MAX-3-CNF, to corresponding optimization problem to the
+  NP-complete 3-CNF problem.
+
+\item Assuming that each clause in the 3-CNF instance does not contain
+  a variable and its negation, a randomized algorithm that
+  independently and uniformly assigns $1$ or $0$ to each variable with
+  probability $1/2$ for each, is a randomized $8/7$ approximation
+  algorithm.
+  \begin{proof}
+    For the stochastic variable $Y_i$, we have $Y_i = 1$ if clause $i$
+    is satisfied, and $Y_i = 0$ otherwise.  For a given clause $(x
+    \lor y \lor z)$, only one assignment will make the clause false,
+    namely the assignment that makes all terms $x,y,z$ become
+    false. Since there are $2^3 = 8$ possible outcomes (assuming that
+    the clause contains only distinct variables), this gives us a
+    probability of $7/8$ for a given clause to become true. Hence
+    $E[Y_i] = 7/8$.
+
+    We are interested in computing
+    $$
+    C = E[Y] = \sum_{i=1}^m E[Y_i] = \sum_{i=1}^m 7/8 = m \frac{7}{8}.
+    $$
+
+    The upper bound for a solution is $m$, and hence the approximation
+    ratio is bounded by $m / C = 8/7$.
+  \end{proof}
+\end{itemize}
+
+\subsection{Randomly built binary search trees}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "notes"
+%%% End:

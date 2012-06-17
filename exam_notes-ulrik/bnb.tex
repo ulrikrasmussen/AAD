@@ -1,3 +1,30 @@
+\subsection{Disposition}
+\begin{itemize}
+\item Present general B\&B method.
+  \begin{itemize}
+  \item $branch$, $f$, $lowerBound$
+  \item $branch$ gives rise to a tree of sets
+  \item $lowerbound$ assigns a lower bound to all solutions in a
+    set. Some properties must be satisfied (childs cannot have smaller
+    bounds than parents, etc.).
+  \item $f$ computes the actual cost of a single solution
+  \item Give unified example of an eager, best-first search
+  \end{itemize}
+\item Example: TSP
+  \begin{itemize}
+  \item Branching (including and excluding edges)
+  \item Lower bound for a branch
+    \begin{itemize}
+      \item MST - with proof of lower bound
+      \item Mixed Integer Linear Program relaxation
+    \end{itemize}
+  \end{itemize}
+ \item Producing an initial solution - metaheuristics etc.
+% lazy vs eager: lazy saves the bound of the parent when branching. Maybe good when lower bound is expensive?
+\end{itemize}
+
+\subsection{General method}
+
 \begin{itemize}
 \item For an NP-complete problem, we (supposedly) cannot find a
   polynomial algorithm for solving it.

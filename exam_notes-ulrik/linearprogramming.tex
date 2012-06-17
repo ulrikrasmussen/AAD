@@ -1,10 +1,303 @@
+\subsection{Disposition}
+\begin{itemize}
+\item Problem definition
+\item Standard form, conversion from general form
+\item Slack form
+\item Slack form for optimal solution, finite number of slack forms
+\item Simplex (mention auxiliary program)
+\item Duality
+  \begin{itemize}
+  \item Definition of duality
+  \item Weak duality
+  \item Strong duality
+  \end{itemize}
+\end{itemize}
+
 \subsection{Standard form}
+\begin{itemize}
+\item Linear optimization problems can be formalized as \emph{linear
+    programs}.
+
+\item A linear program with $n$ variables and $m$ constraints on
+  standard form can be written
+\begin{align*}
+  \text{maximize} && \sum_{j=1}^n c_j x_j \\
+  \text{subject to} && \sum_{j=1}^n a_{ij}x_j \leq{}& b_i & \forall i \in \{1,..,m\} \\
+   && x_j \geq{}& 0 & \forall j \in \{1,...,n\}
+\end{align*}
+
+\item The program can be divided into \emph{objective function},
+  \emph{constraints} and \emph{non-negativity constraints}.
+
+\item We call a setting $\hat x$ of variables obeying the constraints
+  a \emph{feasible solution}. If $\hat x$ does not obey the
+  constraints, it is called \emph{infeasible}.
+
+\item The solution $\hat x$ having the maximum objective value is an
+  \emph{optimal infeasible solution}.
+
+\item If a LP has no feasible solutions, it is called
+  \emph{infeasible}. A LP can also be \emph{unbounded}.
+
+\item Constraints can be seen as half-spaces in $n$-dimensional space,
+  whose intersection is a convex polyhedron called the \emph{feasible
+    region}.
+
+\item LPs can be converted into standard form mechanically.
+  \begin{itemize}
+  \item Minimization can be turned into maximization by taking the
+    negative of the objective function.
+  \item Negative variables can be expressed as the difference between
+    two positive variables.
+  \item Inequalities turning the ``wrong way'' can be flipped by
+    taking the negative on both sides.
+  \item Equality constraints can be expressed as pairs of
+    inequalities.
+  \end{itemize}
+\end{itemize}
 
 \subsection{Slack form}
+\begin{itemize}
+\item To efficiently solve LPs using simplex, we prefer to have them
+  on \emph{slack form}.
+\item On slack form, all inequalities are turned into equalities,
+  except for the nonnegativity constraints. To do this, we introduce
+  the concept of \emph{slack variables}, which intuitively represents
+  the amount of ``slack'' between the value of a constraint and its
+  limit.
+\item For each constraint $i$ of the form
+$$
+  \sum_{j=1}^n a_{ij} x_j \leq b_i,
+$$
+we instead introduce a new slack variable $x_{n+i}$, and write
+$$
+  \sum_{j=1}^n a_{ij} x_j + x_{n+i} = b_i,
+$$
+i.e.
+$$
+  x_{n+i} = b_i - \sum_{j=1}^n a_{ij} x_j
+$$
+with nonnegativity constraint $x_{n+i} \geq 0$.
+
+\item By convention, we write the slack variables on the left hand
+  side of the equalities. All variables on the left hand side are
+  called \emph{basic variables}, and all the variables on the right
+  hand side of the equalities are called \emph{non-basic variables}.
+
+\item The slack form changes as simplex runs. During this process, we
+  use $N$ to denote the set of non-basic variables, and $B$ to denote
+  the set of basic variables. We have $|N| = n$ and $|B| = m$.
+
+\item We can fully describe a slack form by $(B,N,A,b,c,v)$, where $A$
+  is a matrix of the (negative) coefficients in the constriants, $b$
+  is the basic values, $c$ are the coefficients for the objective
+  function, and $v$ is the objective value for the basic solution.
+\end{itemize}
 
 \subsection{Simplex}
+\begin{itemize}
+\item Not a polynomial time algorithm, but rather fast in practice.
+
+\item In almost every step but (maybe) the first few, the basic
+  solution is kept feasible. The goal is to transform the slack form
+  into a form where the optimal solution \emph{is} the basic solution.
+
+\item Uses \emph{pivoting} in each step. A non-basic variable is
+  chosen to enter the basis, and a basic variable is chosen to leave
+  the basis.
+
+\item Each step will monotonically increase the objective value
+  (although not necessarily strictly). We therefore repeat until every
+  variable in the objective function has a negative coefficient.
+
+\item Four problems need to be addressed:
+  \begin{itemize}
+    \item How do we determine if a linear program is feasible?
+    \item What do we do when the initial basic solution is not feasible?
+    \item How do we determine if a linear program is unbounded?
+    \item What variables should be chosen to enter and leave the basis,
+      respectively, in each step?
+  \end{itemize}
+
+\item SIMPLEX works in the following way:
+  \begin{itemize}
+  \item Initialize simplex by detecting whether the LP is feasible,
+    and if it is, converting it to a slack form with a feasible basic
+    solution.
+  \item While there is a non-basic variable $x_j$ with $c_j > 0$:
+    \begin{itemize}
+    \item Pick some $e \in N$ where $c_e > 0$.
+    \item Compute bound $\Delta_i$ for each basic variable $i \in B$.
+    \item Pick $l$ that minimizes $\Delta_l$. If $\delta_l = \infty$, fail.
+    \item Pivot, using $e$ and $l$.
+    \end{itemize}
+  \item Compute solution by setting all basic variables to $0$.
+  \end{itemize}
+
+\item How do we initialize simplex? Construct an auxiliary program
+  $L_{aux}$ from the original, as follows:
+\begin{align*}
+  \text{maximize} & -x_0 \\
+  \text{subject to} & \sum_{j=1}^n a_{ij}x_j - x_0 \leq b_i & \forall i \in \{1,...,m\} \\
+                    & x_j \geq 0 & \forall j \in \{0,1,..,n\}
+\end{align*}
+
+\item The above program has optimal solution $0$ iff the original
+  program is feasible.
+  \begin{proof}
+    If the original program has feasible solution $\overline{x}$, then
+    we can simply set $x_0 = 0$.
+
+    In the other direction, suppose the optimal solution is $0$,
+    implying $x_0 = 0$. Then the solution without $x_0$ is also valid
+    for the original program.
+  \end{proof}
+
+\item Given a feasible LP, SIMPLEX either returns a feasible solution
+  or concludes that the LP is unbounded.
+  \begin{proof}
+    We use the following loop invariant, which is true at the start of
+    each iteration:
+    \begin{itemize}
+    \item The current slack form is equivalent to the original.
+    \item For each basic variable $x_i$ for $i \in B$, $b_i \geq 0$
+    \item The basic solution is feasible.
+    \end{itemize}
+
+    \subsubsection{Initialization}
+
+    We assume that the initialization phase returns a slack form that
+    is equivalent to the original LP. Hence the first part of the
+    invariant follows directly. The returned form also has a feasible
+    basic solution, and hence every slack variable is
+    non-negative. The basic solution sets each non-basic variable to
+    $0$, and hence for every basic variable $x_i$, $b_i = x_i \geq
+    0$.
+
+    \subsubsection{Maintenance}
+
+    The first part of the invariant is true, since pivoting doesn't
+    change any constraints, but uses basic algebraic rules for
+    changing their formulation into an equivalent, alternative
+    form. The solution space for a pivoted slack form is therefore
+    equal to the original form, and hence they are equivalent.
+
+    Due to the restrictions on what variables we pick to enter and
+    leave the basis, respectively, any pivoted $\hat{b_i}$ for $i \in
+    B - \{l\} \cup \{e\}$ is non-negative.
+
+    Using the above, we can easily conclude that the basic solution is
+    feasible.
+    \todo{more detail}
+
+    If the algorithm terminates by returning a solution, the loop
+    invariant ensures that it is feasible. If it returns
+    ``unbounded'', then it means that there is a non-basic variable
+    with positive coefficient which has no upper bound. Hence, we can
+    make the objective value arbitrarily big, and the LP is therefore
+    unbounded.
+  \end{proof}
+
+\item Given an original slack form, the sets $N,B$ can actually fully
+  determine $(A,b,c,v)$. I.e. there is a finite number of slack
+  formulations for a given LP.
+
+  I.e., let $(A,b,c)$ be a LP in standard form. Given a set $B$ of
+  basic variables, the associated slack form is uniquely determined.
+  \begin{proof}
+    Assume that for sets $B,N$, there are two different slack forms,
+    with the first being
+    \begin{align*}
+      && z ={}& v + \sum_{j\in N} c_j x_j \\
+      && x_i ={}& b_i - \sum_{j\in N} a_{ij} x_j & \forall i \in B
+    \end{align*}
+    and the second being
+    \begin{align*}
+      && z ={}& v' + \sum_{j\in N} c_j x_j \\
+      && x_i ={}& b_i' - \sum_{j\in N} a_{ij}' x_j & \forall i \in B
+    \end{align*}
+    For each $i \in B$, we must have
+    $$
+      0 = (b_i - b_i') - \sum_{j \in N} (a_{ij} - a_{ij}') x_j,
+    $$
+    and hence
+    $$
+      \sum_{j \in N} a_{ij} x_j = (b_i - b_i') + \sum_{j \in N} a_{ij}'x_j.
+    $$
+    By Lemma 29.3, it follows immediately that $b_i = b_i'$ and
+    $a_{ij} = a_{ij}'$.
+  \end{proof}
+
+\item As there is a finite number of ways to partition the variables
+  into sets $N,B$, $\binom{m+n}{m}$ to be exact, then SIMPLEX cycles
+  if it has not terminated after that many steps.
+
+\item We can prevent this. When more than one variable competes to
+  leave the basis, simply choose the one with the lowest subscript.
+\end{itemize}
 
 \subsection{Duality}
+\begin{itemize}
+\item Given a primal linear program in standard form, we define the
+  dual as
+  \begin{align*}
+    & \text{minimize} & \sum_{i=1}^m b_i y_i \\
+    & \text{subject to} & \sum_{i=1}^m a_{ij} y_i \geq{}& c_j & \forall j \in \{1...n\} \\
+    &                   & y_i \geq{}& 0 & \forall i \in \{ 1...m \}
+  \end{align*}
+
+\item It can be show that the optimal solution to the dual is equal to
+  the optimal solution of the primal.
+
+\item Before proving that, we have to show \emph{weak duality}. That
+  is, that for a feasible solution $\overline{x}$ to the primal, and a
+  feasible solution $\overline{y}$ to the dual, we have
+$$
+  \sum_{i=1}^m b_i \overline{y}_i \geq \sum_{j=1}^n c_j \overline{x}_j
+$$
+\begin{proof}
+  We have that
+  $$
+  \sum_{j=1}^n c_j \overline{x}_j \leq \sum_{j=1}^n \left(\sum_{i=1}^m a_{ij}\overline{y}_i \right) \overline{x}_i,
+  $$
+  by the definition of the constraints of the dual, and by flipping the sums, we have
+  $$
+  \sum_{j=1}^n c_j \overline{x}_j \leq \sum_{i=1}^m \left(\sum_{j=1}^n a_{ij}\overline{x}_i \right) \overline{y}_i \leq \sum_{i=1}^m b_i \overline{y}_i,
+  $$
+  where the last inequality follows from the constraints of the primal.
+\end{proof}
+
+\item As a corollary, we have that if
+$$
+  \sum_{j=1}^n c_j \overline{x}_j = \sum_{i=1}^m b_i \overline{y}_i
+$$
+then $\overline{x}$ and $\overline{y}$ are optimal solutions to the
+primal and the dual, respectively.
+
+\item Suppose that the last slack form of the primal is
+\begin{align*}
+  z' ={}& v' + \sum_{j\in N} c_j' x_j \\
+  x_i ={}& b_i' - \sum_{j \in N} a_{ij}' x_j & \forall i \in B
+\end{align*}
+then we can produce an optimal solution to the dual by the
+coeffecients of the objective function in the primal:
+$$
+  \overline{y}_i = \left\{
+    \begin{array}{l l}
+      -c_{n+i}' & \text{if $(n+i) \in N$} \\
+      0 & \text{otherwise}
+    \end{array} \right.
+$$
+
+If SIMPLEX produces a solution $\overline{x}$ from this last slack
+form, then $\overline{y}$ is an optimal solution for the dual, and
+$$
+  \sum_{j=1}^n c_j \overline{x}_j = \sum_{i=1}^m b_i \overline{y}_i
+$$
+\begin{proof}
+  \todo{exercise}
+\end{proof}
+\end{itemize}
 
 \subsection{Formulating problems}
 
